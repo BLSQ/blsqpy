@@ -2,7 +2,6 @@
 from mamba import description, context, it
 from expects import expect, equal
 from blsqpy.dot import Dot
-from pathlib import Path
 
 Dot.changeFromPath("./specs/config")
 
