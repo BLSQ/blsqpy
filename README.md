@@ -1,4 +1,6 @@
-# blsq-py
+[![Build Status](https://travis-ci.org/BLSQ/blsqpy.svg?branch=master)](https://travis-ci.org/BLSQ/blsqpy)
+
+# blsq-py 
 
 python script to help with data science
 
