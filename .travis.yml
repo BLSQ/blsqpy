@@ -2,9 +2,7 @@ language: python
 python:
   - "3.5"
 install:
-  - alias pip3=pip
-  - alias python3=python
-  - ./bin/setup
+  - ./bin/ci
 # command to run tests
 script:
   - ./bin/test
