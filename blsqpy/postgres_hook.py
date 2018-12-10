@@ -16,7 +16,7 @@ class PostgresHook(object):
         self.conn_name_attr = "postgres_conn_id"
         self.postgres_conn_id = postgres_conn_id
         props = Dot.load_env(postgres_conn_id)
-        if props['url']:
+        if 'url' in props:
             result = urlparse(props['url'])
             username = result.username
             password = result.password

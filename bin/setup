@@ -1,0 +1,7 @@
+#!/bin/bash
+
+python3 setup.py develop --user
+pip3 install mamba --user
+pip3 install twisted --user
+pip3 install expects --user
+

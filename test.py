@@ -12,7 +12,7 @@ import code
 # Sample config usage
 
 from blsqpy.descriptor import Descriptor
-config = Descriptor.load("./config/demo")
+config = Descriptor.load("./specs/config/demo")
 print("hello", config.demo.test.hello)
 
 

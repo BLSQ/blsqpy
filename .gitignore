@@ -30,3 +30,8 @@ wheels/
 
 # ide
 .vscode
+
+#python test and coverage
+.coverage
+_trial_temp/
+htmlcov/
