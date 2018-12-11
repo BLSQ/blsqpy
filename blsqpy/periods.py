@@ -11,10 +11,6 @@ class DateRange():
         self.start = start
         self.end = end
 
-    def first(self):
-        return self.start
-
-
 class ExtractPeriod:
     def call(self, date_range):
         array = []
@@ -36,7 +32,7 @@ class ExtractPeriod:
         pass
 
     @abstractmethod
-    def next_date(self, date_range):
+    def next_date(self, current_date):
         pass
 
 
@@ -107,7 +103,7 @@ class YearQuarterParser:
         month_start = (3 * (quarter - 1)) + 1
         month_end = month_start+2
         start_date = date(year=year, month=month_start, day=1)
-        end_date = date(year=year, month=month_end, day=1)
+        end_date = date(year=year, month=month_end, day=1) +relativedelta(day=31)
 
         return DateRange(start_date, end_date)
 
@@ -128,14 +124,20 @@ class YearMonthParser:
 PARSERS = [YearParser, YearQuarterParser,
            YearMonthParser]
 
+CACHE = {}
+
 
 class Periods:
     @staticmethod
     def split(period, frequency):
+        cache_key = period+"-"+frequency
+        if cache_key in CACHE:
+            return list(CACHE[cache_key])
         date_range = Periods.as_date_range(period)
         mapper = CLASSES_MAPPING[frequency]
-        periods = mapper().call(date_range)
-        return periods
+        periods = tuple(mapper().call(date_range))
+        CACHE[cache_key] = periods
+        return list(periods)
 
     @staticmethod
     def as_date_range(period):
