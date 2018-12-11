@@ -11,6 +11,7 @@ class DateRange():
         self.start = start
         self.end = end
 
+
 class ExtractPeriod:
     def call(self, date_range):
         array = []
@@ -22,6 +23,10 @@ class ExtractPeriod:
                 break
 
         return array
+
+    def quarter_start(self, current_date):
+        quarterMonth = (current_date.month - 1) // 3 * 3 + 1
+        return date(current_date.year, quarterMonth, 1)
 
     @abstractmethod
     def first_date(self, date_range):
@@ -49,8 +54,7 @@ class ExtractMonthlyPeriod(ExtractPeriod):
 
 class ExtractQuarterlyPeriod(ExtractPeriod):
     def next_date(self, current_date):
-        quarterStart = date(current_date.year,
-                            (current_date.month - 1) // 3 * 3 + 1, 1)
+        quarterStart = self.quarter_start(current_date)
         nextDate = quarterStart + relativedelta(months=3)
         return nextDate
 
@@ -58,8 +62,7 @@ class ExtractQuarterlyPeriod(ExtractPeriod):
         return current_date.strftime("%Y") + "Q" + str(math.ceil((current_date.month / 3.0)))
 
     def first_date(self, date_range):
-        dt = date_range.start
-        return date(dt.year, (dt.month - 1) // 3 * 3 + 1, 1)
+        return self.quarter_start(date_range.start)
 
 
 class ExtractYearlyPeriod(ExtractPeriod):
@@ -103,7 +106,8 @@ class YearQuarterParser:
         month_start = (3 * (quarter - 1)) + 1
         month_end = month_start+2
         start_date = date(year=year, month=month_start, day=1)
-        end_date = date(year=year, month=month_end, day=1) +relativedelta(day=31)
+        end_date = date(year=year, month=month_end, day=1) + \
+            relativedelta(day=31)
 
         return DateRange(start_date, end_date)
 
