@@ -33,7 +33,8 @@ with description("dhis2 split") as self:
 
     with it("converts year to months"):
         expect(Periods.split("2016", "monthly")).to(equal(
-            ['201601', '201602', '201603', '201604', '201605', '201606', '201607', '201608', '201609', '201610', '201611', '201612']))
+            ['201601', '201602', '201603', '201604', '201605', '201606', '201607',
+             '201608', '201609', '201610', '201611', '201612']))
 
     with it("cached and non cached version returns same type"):
         first = Periods.split("2018", "monthly")
@@ -42,15 +43,21 @@ with description("dhis2 split") as self:
 
 with description("as_date_range") as self:
     with it("for monthly"):
-        expect(Periods.as_date_range("201601").start).to(equal(date(2016,1,1)))
-        expect(Periods.as_date_range("201601").end).to(equal(date(2016,1,31)))
+        expect(Periods.as_date_range("201601").start).to(
+            equal(date(2016, 1, 1)))
+        expect(Periods.as_date_range("201601").end).to(
+            equal(date(2016, 1, 31)))
 
     with it("for quarter"):
-        expect(Periods.as_date_range("2016Q3").start).to(equal(date(2016,7,1)))
-        expect(Periods.as_date_range("2016Q3").end).to(equal(date(2016,9,30)))
-        expect(Periods.as_date_range("2016Q4").start).to(equal(date(2016,10,1)))
-        expect(Periods.as_date_range("2016Q4").end).to(equal(date(2016,12,31)))
+        expect(Periods.as_date_range("2016Q3").start).to(
+            equal(date(2016, 7, 1)))
+        expect(Periods.as_date_range("2016Q3").end).to(
+            equal(date(2016, 9, 30)))
+        expect(Periods.as_date_range("2016Q4").start).to(
+            equal(date(2016, 10, 1)))
+        expect(Periods.as_date_range("2016Q4").end).to(
+            equal(date(2016, 12, 31)))
 
     with it("for year"):
-        expect(Periods.as_date_range("2016").start).to(equal(date(2016,1,1)))
-        expect(Periods.as_date_range("2016").end).to(equal(date(2016,12,31)))
+        expect(Periods.as_date_range("2016").start).to(equal(date(2016, 1, 1)))
+        expect(Periods.as_date_range("2016").end).to(equal(date(2016, 12, 31)))
