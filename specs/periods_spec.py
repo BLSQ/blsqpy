@@ -37,6 +37,22 @@ with description("dhis2 split") as self:
             ['201601', '201602', '201603', '201604', '201605', '201606', '201607',
              '201608', '201609', '201610', '201611', '201612']))
 
+    with it("converts financial year july to year"):
+        expect(Periods.split("2015July", "yearly")).to(equal(
+            ["2015", "2016"]))
+        expect(Periods.split("2016July", "yearly")).to(equal(
+            ["2016", "2017"]))
+
+    with it("converts month to financial year july"):
+        expect(Periods.split("201601", "financial_july")).to(equal(
+            ["2015July"]))
+        expect(Periods.split("201606", "financial_july")).to(equal(
+            ["2015July"]))
+        expect(Periods.split("201607", "financial_july")).to(equal(
+            ["2016July"]))
+        expect(Periods.split("201701", "financial_july")).to(equal(
+            ["2016July"]))
+
     with it("cached and non cached version returns same type"):
         first = Periods.split("2018", "monthly")
         last = Periods.split("2018", "monthly")
@@ -44,13 +60,13 @@ with description("dhis2 split") as self:
 
 with description("as_date_range") as self:
 
-    with it("for monthly"):
+    with it("correct range for monthly"):
         expect(Periods.as_date_range("201601").start).to(
             equal(date(2016, 1, 1)))
         expect(Periods.as_date_range("201601").end).to(
             equal(date(2016, 1, 31)))
 
-    with it("for quarter"):
+    with it("correct range for quarter"):
         expect(Periods.as_date_range("2016Q3").start).to(
             equal(date(2016, 7, 1)))
         expect(Periods.as_date_range("2016Q3").end).to(
@@ -60,6 +76,16 @@ with description("as_date_range") as self:
         expect(Periods.as_date_range("2016Q4").end).to(
             equal(date(2016, 12, 31)))
 
-    with it("for year"):
+    with it("correct range for year"):
         expect(Periods.as_date_range("2016").start).to(equal(date(2016, 1, 1)))
         expect(Periods.as_date_range("2016").end).to(equal(date(2016, 12, 31)))
+
+    with it("correct range for financial july year"):
+        expect(Periods.as_date_range("2016July").start).to(
+            equal(date(2016, 7, 1)))
+        expect(Periods.as_date_range("2016July").end).to(
+            equal(date(2017, 6, 30)))
+        expect(Periods.as_date_range("2017July").start).to(
+            equal(date(2017, 7, 1)))
+        expect(Periods.as_date_range("2017July").end).to(
+            equal(date(2018, 6, 30)))

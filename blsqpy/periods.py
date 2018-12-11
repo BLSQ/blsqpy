@@ -6,6 +6,12 @@ from dateutil.parser import parse as parseDate
 from abc import ABC, abstractmethod
 
 
+def last_day_of_month(any_day):
+    next_month = any_day.replace(
+        day=28) + relativedelta(days=4)  # this will never fail
+    return next_month - relativedelta(days=next_month.day)
+
+
 class DateRange():
     def __init__(self, start, end):
         self.start = start
@@ -76,10 +82,30 @@ class ExtractYearlyPeriod(ExtractPeriod):
         return date_range.start.replace(month=1, day=1)
 
 
+class ExtractFinancialJulyPeriod(ExtractPeriod):
+    def next_date(self, date):
+        return date.replace(year=date.year + 1)
+
+    def dhis2_format(self, date):
+        return date.strftime("%YJuly")
+
+    def first_date(self, date_range):
+        anniv_date = date_range.start.replace(month=1, day=1) + \
+            relativedelta(months=6)
+        final_date = None
+        if date_range.start < anniv_date:
+            final_date = anniv_date - relativedelta(years=1)
+        else:
+            final_date = anniv_date
+
+        return final_date
+
+
 CLASSES_MAPPING = {
     "monthly": ExtractMonthlyPeriod,
     "quarterly": ExtractQuarterlyPeriod,
     "yearly": ExtractYearlyPeriod,
+    "financial_july": ExtractFinancialJulyPeriod
 }
 
 
@@ -125,8 +151,22 @@ class YearMonthParser:
         return DateRange(start_date, end_date)
 
 
+class FinancialJulyParser:
+    @staticmethod
+    def parse(period):
+        if len(period) != 8:
+            return
+        year = int(period[0:4])
+        month = 7
+        start_date = date(year=year, month=month, day=1)
+        end_date = last_day_of_month(start_date - relativedelta(days=1)) + \
+            relativedelta(years=1)
+
+        return DateRange(start_date, end_date)
+
+
 PARSERS = [YearParser, YearQuarterParser,
-           YearMonthParser]
+           YearMonthParser, FinancialJulyParser]
 
 CACHE = {}
 
