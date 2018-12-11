@@ -53,6 +53,20 @@ with description("dhis2 split") as self:
         expect(Periods.split("201701", "financial_july")).to(equal(
             ["2016July"]))
 
+    with it("converts quarter to financial year july"):
+        expect(Periods.split("2016Q1", "financial_july")).to(equal(
+            ["2015July"]))
+        expect(Periods.split("2016Q2", "financial_july")).to(equal(
+            ["2015July"]))
+        expect(Periods.split("2016Q3", "financial_july")).to(equal(
+            ["2016July"]))
+        expect(Periods.split("2016Q4", "financial_july")).to(equal(
+            ["2016July"]))
+        expect(Periods.split("2017Q1", "financial_july")).to(equal(
+            ["2016July"]))
+        expect(Periods.split("2017Q2", "financial_july")).to(equal(
+            ["2016July"]))
+
     with it("cached and non cached version returns same type"):
         first = Periods.split("2018", "monthly")
         last = Periods.split("2018", "monthly")
