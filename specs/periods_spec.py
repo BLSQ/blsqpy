@@ -4,6 +4,7 @@ from blsqpy.periods import Periods
 from datetime import date
 
 with description("dhis2 split") as self:
+
     with it("converts month to quarter"):
         expect(Periods.split("201601", "quarterly")).to(equal(["2016Q1"]))
         expect(Periods.split("201602", "quarterly")).to(equal(["2016Q1"]))
@@ -42,6 +43,7 @@ with description("dhis2 split") as self:
         expect(first).to(equal(last))
 
 with description("as_date_range") as self:
+
     with it("for monthly"):
         expect(Periods.as_date_range("201601").start).to(
             equal(date(2016, 1, 1)))
