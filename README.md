@@ -1,10 +1,18 @@
 [![Build Status](https://travis-ci.org/BLSQ/blsqpy.svg?branch=master)](https://travis-ci.org/BLSQ/blsqpy) [![Maintainability](https://api.codeclimate.com/v1/badges/782c911a01ede5eacbbd/maintainability)](https://codeclimate.com/github/BLSQ/blsqpy/maintainability)
 
-# blsq-py 
+# blsq-py
 
 python script to help with data science
 
 # Usage
+
+## Installation
+
+easiest for the moment... use virtualenv and leave on the edge
+
+```
+pip install --upgrade git+https://github.com/blsq/blsqpy.git
+```
 
 ## Credentials externalisation
 
@@ -12,9 +20,9 @@ by default will look for files in
 
 `~/.credentials/...`
 
-
 this code will look for '/home/xxxxxx/.credentials/pointenv'
 and return it's content as a dict
+
 ```
 from blsqpy.dot import Dot
 config = Dot.load_env("pointenv")
@@ -41,7 +49,6 @@ BUCKET_NAME=bucket-name
 
 #### PostgresHook
 
-
 ```python
 from blsqpy.postgres_hook import PostgresHook
 PostgresHook("dhis2_db_connection")
@@ -49,6 +56,7 @@ PostgresHook("dhis2_db_connection")
 ```
 
 dhis2_db_connection will look like
+
 ```
 url=postgres://user:password@server.com:5432/dbname
 ```
@@ -75,7 +83,6 @@ This one assume you have blsq created the local config needed
 python3 test.py --user
 ```
 
-
 ## Testing
 
 ### Additional dependencies
@@ -85,6 +92,7 @@ Run
 ```
 ./bin/setup
 ```
+
 or
 
 ```
@@ -108,4 +116,3 @@ if you want to consult html reports
 coverage html ./blsqpy/*.py
 google-chrome ./htmlcov/index.html
 ```
-
