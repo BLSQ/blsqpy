@@ -3,15 +3,20 @@ import pandas as pd
 from blsqpy.descriptor import Descriptor
 
 
-def to_expressions(activity):
+def to_expressions(activity, activity_code):
     expressions = {}
-    for source_code, source in Descriptor.as_items(activity.sources):
-        for state_code, state in Descriptor.as_items(activity.states):
-            if len(state.uids) > 1:
+    prefix = ''
+    if activity_code:
+        prefix = activity_code+"_"
+    for state_code, state in Descriptor.as_items(activity.states):
+        for source_code, source in Descriptor.as_items(state.sources):
+            if len(source.uids) > 1:
                 state_expressions = []
-                for idx in range(len(state.uids)):
-                    state_expressions.append(state_code+"_"+str(idx+1))
-                expressions[state_code] = state_expressions
+                for idx in range(len(source.uids)):
+                    state_expressions.append(
+                        prefix+state_code+"_"+str(idx+1)+"_"+source_code)
+                expressions[prefix+state_code+"_" +
+                            source_code] = state_expressions
     return expressions
 
 
@@ -21,15 +26,17 @@ def to_mappings(activity, activity_code):
     if activity_code:
         prefix = activity_code+"_"
     for state_code, state in Descriptor.as_items(activity.states):
-        if len(state.uids) == 1:
-            mappings[state.uids[0]] = prefix+state_code
-        else:
-            for idx, uid in enumerate(state.uids):
-                mappings[uid] = prefix+state_code+"_"+str(idx+1)
+        for source_code, source in Descriptor.as_items(state.sources):
+            if len(source.uids) == 1:
+                mappings[source.uids[0]] = prefix+state_code+"_"+source_code
+            else:
+                for idx, uid in enumerate(source.uids):
+                    mappings[uid] = prefix+state_code + \
+                        "_"+str(idx+1)+"_"+source_code
     return mappings
 
 
-def map_from_activity(df, activity):
+def map_from_activity(df, activity, activity_code):
 
     mappings = to_mappings(activity, None)
 
@@ -41,7 +48,7 @@ def map_from_activity(df, activity):
                                     errors='ignore', downcast='float')
 
     # TODO generate eval from config
-    eval_expressions = to_expressions(activity)
+    eval_expressions = to_expressions(activity, activity_code)
 
     for column, columns_to_sum in eval_expressions.items():
         eval_expression = column + ' = '+(" + ".join(columns_to_sum))
