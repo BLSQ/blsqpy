@@ -36,3 +36,6 @@ wheels/
 _trial_temp/
 htmlcov/
 coverage.xml
+
+#dev
+activate

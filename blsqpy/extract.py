@@ -5,7 +5,7 @@ from blsqpy.descriptor import Descriptor
 
 def to_data_elements(activity):
     data_elements = []
-    for _source_code, source in Descriptor.as_items(activity):
+    for _source_code, source in Descriptor.as_items(activity.sources):
         for _state_code, state in Descriptor.as_items(source.states):
             data_elements.extend(state.uids)
     return data_elements
