@@ -9,9 +9,7 @@ class Dhis2(object):
 
     Parameters
     ----------
-    dbname: The name of the database
-    user: The user name used to access the database
-    host: The server on which the database is hosted
+    hook: postgres hook (airflow or not)
 
     Attributes
     ----------
