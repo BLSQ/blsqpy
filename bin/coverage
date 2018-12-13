@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mamba --format=documentation --enable-coverage
+coverage html ./blsqpy/*.py
+google-chrome ./htmlcov/index.html

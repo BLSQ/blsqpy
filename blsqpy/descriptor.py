@@ -15,4 +15,4 @@ class Descriptor():
 
     @staticmethod
     def as_items(collection):
-        return collection._asdict().items()
+        return sorted(collection._asdict().items())

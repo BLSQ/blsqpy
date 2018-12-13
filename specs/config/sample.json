@@ -1,0 +1,46 @@
+{
+  "activities": {
+    "pills": {
+      "name": "Pilule",
+      "states": {
+        "active": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj.oFtySBIkit2"]
+            }
+          }
+        },
+        "new_structure": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj.pQqm0IZ6AJ3"]
+            }
+          }
+        },
+        "new_program": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj.Vkfh73dsruW"]
+            }
+          }
+        },
+        "delivered": {
+          "sources": {
+            "moh": {
+              "uids": [
+                "fSD1ZZo4hTs.oFtySBIkit2",
+                "p4GY25ry19H.pQqm0IZ6AJ3",
+                "sur5ZhRRQYp.HllvX50cXC0"
+              ],
+              "comments": [
+                "Pilules : Microgynon distribuée",
+                "Pilules : Autres distribuée",
+                "Pilules : Microlut distribuée"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
