@@ -35,3 +35,4 @@ wheels/
 .coverage
 _trial_temp/
 htmlcov/
+coverage.xml
