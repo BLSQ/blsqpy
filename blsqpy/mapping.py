@@ -1,10 +1,12 @@
 import pandas as pd
+import numpy as np
 
 from blsqpy.descriptor import Descriptor
+from collections import OrderedDict
 
 
 def to_expressions(activity, activity_code):
-    expressions = {}
+    expressions = OrderedDict()
     prefix = ''
     if activity_code:
         prefix = activity_code+"_"
@@ -21,7 +23,7 @@ def to_expressions(activity, activity_code):
 
 
 def to_mappings(activity, activity_code):
-    mappings = {}
+    mappings = OrderedDict()
     prefix = ''
     if activity_code:
         prefix = activity_code+"_"
@@ -38,21 +40,27 @@ def to_mappings(activity, activity_code):
 
 def map_from_activity(df, activity, activity_code):
 
-    mappings = to_mappings(activity, None)
+    mappings = to_mappings(activity, activity_code)
+    # make sure columns exists even if no data
+    for de, column in mappings.items():
+        if de not in df.columns:
+            print("WARN adding empty columnt for", de, column)
+            df[de] = np.nan
 
     df = df.rename(index=str, columns=mappings)
 
     # make sure we consider these a numerics, or + eval will concatenate instead of summing
-    for column, de in mappings.items():
-        df[str(de)] = pd.to_numeric(df[str(de)],
-                                    errors='ignore', downcast='float')
+    for de, column in mappings.items():
+        if de in df.columns:
+            df[de] = pd.to_numeric(df[de],
+                                   errors='ignore', downcast='float')
 
-    # TODO generate eval from config
     eval_expressions = to_expressions(activity, activity_code)
 
     for column, columns_to_sum in eval_expressions.items():
-        eval_expression = column + ' = '+(" + ".join(columns_to_sum))
-        df.eval(eval_expression, inplace=True, engine="python")
+
+        df[column] = df[columns_to_sum].sum(axis=1, min_count=1)
+
         df.drop(columns_to_sum, axis=1, inplace=True)
 
-    return df.reset_index()
+    return df

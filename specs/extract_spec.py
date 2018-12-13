@@ -14,8 +14,8 @@ with description('extract') as self:
         data_elements = extract.to_data_elements(config.activities.pills)
         expect(data_elements).to(equal([
             's4CxsmoqdRj.oFtySBIkit2',
-            'fSD1ZZo4hTs.HllvX50cXC0',
-            'p4GY25ry19H.HllvX50cXC0',
+            'fSD1ZZo4hTs.oFtySBIkit2',
+            'p4GY25ry19H.pQqm0IZ6AJ3',
             'sur5ZhRRQYp.HllvX50cXC0',
             's4CxsmoqdRj.Vkfh73dsruW',
             's4CxsmoqdRj.pQqm0IZ6AJ3']
