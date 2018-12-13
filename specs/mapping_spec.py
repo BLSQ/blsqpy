@@ -40,6 +40,7 @@ with description('mapping') as self:
         print("*************** mapped_df")
         print(mapped_df)
 
+        #mapped_df.to_csv("./specs/mapping/mapped.csv", sep=',')
         expected_mapped = pd.read_csv("./specs/mapping/mapped.csv", sep=',')
         print("*************** expected_mapped")
         print(expected_mapped)

@@ -19,7 +19,7 @@ def rotate_de_coc_as_columns(df):
     })
 
     df["period"] = np.where(df.monthly, df.monthly, df.quarterly)
-    df = df.drop(["uidlevel3", "uidlevel2", "enddate",
+    df = df.drop(["enddate",
                   "dataelementname", "catcomboname", "created",
                   "quarterly", "monthly"], axis=1)
 
@@ -27,6 +27,6 @@ def rotate_de_coc_as_columns(df):
 
     df.drop(['de', 'coc'], axis=1, inplace=True)
 
-    df = df.set_index(['period', 'orgunit', 'de.coc'],
+    df = df.set_index(['period', 'orgunit', "uidlevel3", "uidlevel2", 'de.coc',],
                       drop=True).unstack('de.coc')
     return df["value"]
