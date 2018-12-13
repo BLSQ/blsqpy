@@ -5,13 +5,13 @@ from blsqpy.descriptor import Descriptor
 
 def to_expressions(activity):
     expressions = {}
-
-    for state_code, state in Descriptor.as_items(activity.states):
-        if len(state.uids) > 1:
-            state_expressions = []
-            for idx in range(len(state.uids)):
-                state_expressions.append(state_code+"_"+str(idx+1))
-            expressions[state_code] = state_expressions
+    for source_code, source in Descriptor.as_items(activity.sources):
+        for state_code, state in Descriptor.as_items(activity.states):
+            if len(state.uids) > 1:
+                state_expressions = []
+                for idx in range(len(state.uids)):
+                    state_expressions.append(state_code+"_"+str(idx+1))
+                expressions[state_code] = state_expressions
     return expressions
 
 

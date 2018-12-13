@@ -2,16 +2,32 @@
   "default_category_option_combos": "HllvX50cXC0",
   "activities": {
     "pills": {
-      "sources": {
-        "moh": {
-          "name": "Pilule",
-          "states": {
-            "active": {
+      "name": "Pilule",
+      "states": {
+        "active": {
+          "sources": {
+            "moh": {
               "uids": ["s4CxsmoqdRj.oFtySBIkit2"]
-            },
-            "new_structure": { "uids": ["s4CxsmoqdRj.pQqm0IZ6AJ3"] },
-            "new_program": { "uids": ["s4CxsmoqdRj.Vkfh73dsruW"] },
-            "delivered": {
+            }
+          }
+        },
+        "new_structure": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj.pQqm0IZ6AJ3"]
+            }
+          }
+        },
+        "new_program": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj.Vkfh73dsruW"]
+            }
+          }
+        },
+        "delivered": {
+          "sources": {
+            "moh": {
               "uids": [
                 "fSD1ZZo4hTs.HllvX50cXC0",
                 "p4GY25ry19H.HllvX50cXC0",
