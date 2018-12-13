@@ -39,7 +39,7 @@ def to_mappings(activity, activity_code):
     return mappings
 
 
-def map_from_activity(df, activity, activity_code):
+def map_from_activity(df, activity, activity_code, drop_intermediate=True):
 
     mappings = to_mappings(activity, activity_code)
     # make sure columns exists even if no data
@@ -52,16 +52,16 @@ def map_from_activity(df, activity, activity_code):
 
     # make sure we consider these a numerics, or + eval will concatenate instead of summing
     for de, column in mappings.items():
-        if de in df.columns:
-            df[de] = pd.to_numeric(df[de],
-                                   errors='ignore', downcast='float')
+        df[column] = pd.to_numeric(df[column],errors='ignore', downcast='float')
 
     eval_expressions = to_expressions(activity, activity_code)
 
     for column, columns_to_sum in eval_expressions.items():
-        # some column might not have values, we want to ignore them
+        # some column might not have values, we want to consider them as 0
         # if all column are nan, keep nan
-        df[column] = df[columns_to_sum].sum(axis=1, min_count=1)
-        df.drop(columns_to_sum, axis=1, inplace=True)
 
+        df[column] = df[columns_to_sum].sum(axis=1, min_count=1)
+        if drop_intermediate: 
+            df.drop(columns_to_sum, axis=1, inplace=True)
+            
     return df
