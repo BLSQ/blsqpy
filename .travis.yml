@@ -1,8 +1,16 @@
 language: python
+env:
+  global:
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
 python:
   - "3.5"
 install:
   - ./bin/ci
 # command to run tests
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
 script:
   - ./bin/test
+  - coverage xml ./blsqpy/*.py
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --prefix "./" -t coverage.py --exit-code $TRAVIS_TEST_RESULT; fi

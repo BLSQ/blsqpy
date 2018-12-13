@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BLSQ/blsqpy.svg?branch=master)](https://travis-ci.org/BLSQ/blsqpy) [![Maintainability](https://api.codeclimate.com/v1/badges/782c911a01ede5eacbbd/maintainability)](https://codeclimate.com/github/BLSQ/blsqpy/maintainability)
+[![Build Status](https://travis-ci.org/BLSQ/blsqpy.svg?branch=master)](https://travis-ci.org/BLSQ/blsqpy) [![Maintainability](https://api.codeclimate.com/v1/badges/782c911a01ede5eacbbd/maintainability)](https://codeclimate.com/github/BLSQ/blsqpy/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/782c911a01ede5eacbbd/test_coverage)](https://codeclimate.com/github/BLSQ/blsqpy/test_coverage)
 
 # blsq-py
 
