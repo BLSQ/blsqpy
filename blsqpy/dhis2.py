@@ -7,6 +7,7 @@ from functools import partial
 from .periods import Periods
 from .levels import Levels
 
+
 class Dhis2(object):
     """Information and metadata about a given DHIS instance.
 
@@ -131,7 +132,6 @@ WHERE """+de_ids_condition+";"
         def to_quarterly_period(x):
             return Periods.split(x[0].strftime("%Y%m"), "quarterly")[0]
 
-
         df["monthly"] = df[['start_date', 'frequency']].apply(
             to_monthly_period, axis=1)
         df["quarterly"] = df[['start_date', 'frequency']].apply(
@@ -141,17 +141,18 @@ WHERE """+de_ids_condition+";"
             "end_date": "enddate",
         })
 
-        df.drop(["start_date","frequency"], axis=1, inplace=True)
-
+        df.drop(["start_date", "frequency"], axis=1, inplace=True)
 
         max_level = Levels.max_level(df)
 
-
         def to_level(select_level, x):
-          return Levels.to_level_uid(x[0],select_level)
+            return Levels.to_level_uid(x[0], select_level)
 
         for level in range(2, max_level - 1):
-            df["uidlevel"+str(level)] = df[['path']].apply(partial(to_level, level), axis=1)
+            df["uidlevel"+str(level)] = df[['path']
+                                           ].apply(partial(to_level, level), axis=1)
+
+        df.drop(["path"], axis=1, inplace=True)
 
         return df
 
