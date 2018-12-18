@@ -191,3 +191,26 @@ class Periods:
             if dateRange:
                 break
         return dateRange
+
+    @staticmethod
+    def add_period_columns(df):
+        def to_monthly_period(x):
+            if x[1] != 'quarterly':
+                return Periods.split(x[0].strftime("%Y%m"), "monthly")[0]
+            else:
+                return None
+
+        def to_quarterly_period(x):
+            return Periods.split(x[0].strftime("%Y%m"), "quarterly")[0]
+
+        df["monthly"] = df[['start_date', 'frequency']].apply(
+            to_monthly_period, axis=1)
+        df["quarterly"] = df[['start_date', 'frequency']].apply(
+            to_quarterly_period, axis=1)
+
+        df = df.rename(index=str, columns={
+            "end_date": "enddate",
+        })
+
+        df.drop(["start_date", "frequency"], axis=1, inplace=True)
+        return df

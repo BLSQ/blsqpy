@@ -2,7 +2,6 @@
 
 import pandas as pd
 import psycopg2 as pypg
-from functools import partial
 
 from .periods import Periods
 from .levels import Levels
@@ -122,37 +121,8 @@ JOIN period ON period.periodid = datavalue.periodid join periodtype ON periodtyp
 WHERE """+de_ids_condition+";"
         print(sql)
         df = self.hook.get_pandas_df(sql)
-
-        def to_monthly_period(x):
-            if x[1] != 'quarterly':
-                return Periods.split(x[0].strftime("%Y%m"), "monthly")[0]
-            else:
-                return None
-
-        def to_quarterly_period(x):
-            return Periods.split(x[0].strftime("%Y%m"), "quarterly")[0]
-
-        df["monthly"] = df[['start_date', 'frequency']].apply(
-            to_monthly_period, axis=1)
-        df["quarterly"] = df[['start_date', 'frequency']].apply(
-            to_quarterly_period, axis=1)
-
-        df = df.rename(index=str, columns={
-            "end_date": "enddate",
-        })
-
-        df.drop(["start_date", "frequency"], axis=1, inplace=True)
-
-        max_level = Levels.max_level(df)
-
-        def to_level(select_level, x):
-            return Levels.to_level_uid(x[0], select_level)
-
-        for level in range(2, max_level - 1):
-            df["uidlevel"+str(level)] = df[['path']
-                                           ].apply(partial(to_level, level), axis=1)
-
-        df.drop(["path"], axis=1, inplace=True)
+        df = Periods.add_period_columns(df)
+        df = Levels.add_uid_levels_columns_from_path_column(df)
 
         return df
 
