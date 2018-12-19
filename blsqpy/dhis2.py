@@ -3,6 +3,9 @@
 import pandas as pd
 import psycopg2 as pypg
 
+from .periods import Periods
+from .levels import Levels
+
 
 class Dhis2(object):
     """Information and metadata about a given DHIS instance.
@@ -100,25 +103,29 @@ class Dhis2(object):
 
         de_ids_condition = " OR ".join(list(map(to_sql_condition, de_ids)))
 
-        print(de_ids_condition)
+        #print(de_ids_condition)
 
         sql = """
-            SELECT datavalue.value, _orgunitstructure.uidlevel3, _orgunitstructure.uidlevel2,
-             _periodstructure.enddate, _periodstructure.monthly, _periodstructure.quarterly,
-             dataelement.uid AS dataelementid, dataelement.name AS dataelementname,
-             categoryoptioncombo.uid AS CatComboID , categoryoptioncombo.name AS CatComboName,
-             dataelement.created,
-             organisationunit.uid as uidorgunit
-             FROM datavalue
-             JOIN _orgunitstructure ON _orgunitstructure.organisationunitid = datavalue.sourceid
-             JOIN _periodstructure ON _periodstructure.periodid = datavalue.periodid
-             JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
-             JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
-             JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
-             WHERE """+de_ids_condition+";"
-        print(sql)
-        data = self.hook.get_pandas_df(sql)
-        return data
+SELECT datavalue.value,
+organisationunit.path,
+period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency,
+dataelement.uid AS dataelementid, dataelement.name AS dataelementname,
+categoryoptioncombo.uid AS CatComboID , categoryoptioncombo.name AS CatComboName,
+dataelement.created,
+organisationunit.uid as uidorgunit
+FROM datavalue
+JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
+JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
+JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
+JOIN period ON period.periodid = datavalue.periodid join periodtype ON periodtype.periodtypeid = period.periodtypeid
+WHERE """+de_ids_condition+";"
+        #print(sql)
+        df = self.hook.get_pandas_df(sql)
+        df.to_csv("./tmp/de.csv", index=None)
+        df = Periods.add_period_columns(df)
+        df = Levels.add_uid_levels_columns_from_path_column(df)
+
+        return df
 
     def label_org_unit_structure(self):
         """Label the Organisation Units Structure table."""
