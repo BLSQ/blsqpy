@@ -1,3 +1,4 @@
+import pandas as pd
 from mamba import description, context, it
 from expects import expect, equal
 from blsqpy.periods import Periods
@@ -103,3 +104,29 @@ with description("as_date_range") as self:
             equal(date(2017, 7, 1)))
         expect(Periods.as_date_range("2017July").end).to(
             equal(date(2018, 6, 30)))
+
+with description("add_period_columns") as self:
+    with it("quarter and monthly columns"):
+        df = pd.DataFrame(
+            data=[
+                ["2018-10-31", "monthly", "org1"],
+                ["2018-10-31", "quarterly", "org2"]
+            ],
+            index=["0", "1"],
+            columns=['start_date', 'frequency', "extra"])
+        df['start_date'] = pd.to_datetime(df['start_date'], format='%Y-%m-%d')
+        df = Periods.add_period_columns(df)
+        print(df)
+
+        expected_df = pd.DataFrame(
+            data=[
+                ["org1", "201810", "2018Q4"],
+                ["org2", None, "2018Q4"]
+            ],
+            index=["0", "1"],
+            columns=["extra", 'monthly', 'quarterly'])
+
+        print(expected_df)
+        pd.testing.assert_frame_equal(
+            df,
+            expected_df, check_dtype=False, check_index_type=False)

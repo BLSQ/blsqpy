@@ -3,6 +3,9 @@
 import pandas as pd
 import psycopg2 as pypg
 
+from .periods import Periods
+from .levels import Levels
+
 
 class Dhis2(object):
     """Information and metadata about a given DHIS instance.
@@ -95,30 +98,34 @@ class Dhis2(object):
             de_id = splitted[0]
             if len(splitted) > 1:
                 category_id = splitted[1]
-                return "( dataelement.uid='{0}' AND categoryoptioncombo.uid='{1}')".format(de_id,category_id)
+                return "( dataelement.uid='{0}' AND categoryoptioncombo.uid='{1}')".format(de_id, category_id)
             return "( dataelement.uid='{0}')".format(de_id)
 
         de_ids_condition = " OR ".join(list(map(to_sql_condition, de_ids)))
 
-        print(de_ids_condition)
+        #print(de_ids_condition)
 
         sql = """
-            SELECT datavalue.value, _orgunitstructure.uidlevel3, _orgunitstructure.uidlevel2,
-             _periodstructure.enddate, _periodstructure.monthly, _periodstructure.quarterly,
-             dataelement.uid AS dataelementid, dataelement.name AS dataelementname,
-             categoryoptioncombo.uid AS CatComboID , categoryoptioncombo.name AS CatComboName,
-             dataelement.created,
-             organisationunit.uid as uidorgunit
-             FROM datavalue
-             JOIN _orgunitstructure ON _orgunitstructure.organisationunitid = datavalue.sourceid
-             JOIN _periodstructure ON _periodstructure.periodid = datavalue.periodid
-             JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
-             JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
-             JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
-             WHERE """+de_ids_condition+";"
-        print(sql)
-        data = self.hook.get_pandas_df(sql)
-        return data
+SELECT datavalue.value,
+organisationunit.path,
+period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency,
+dataelement.uid AS dataelementid, dataelement.name AS dataelementname,
+categoryoptioncombo.uid AS CatComboID , categoryoptioncombo.name AS CatComboName,
+dataelement.created,
+organisationunit.uid as uidorgunit
+FROM datavalue
+JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
+JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
+JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
+JOIN period ON period.periodid = datavalue.periodid join periodtype ON periodtype.periodtypeid = period.periodtypeid
+WHERE """+de_ids_condition+";"
+        #print(sql)
+        df = self.hook.get_pandas_df(sql)
+        df.to_csv("./tmp/de.csv", index=None)
+        df = Periods.add_period_columns(df)
+        df = Levels.add_uid_levels_columns_from_path_column(df)
+
+        return df
 
     def label_org_unit_structure(self):
         """Label the Organisation Units Structure table."""
@@ -137,3 +144,29 @@ class Dhis2(object):
                                                                 right_on='uid')
         self.orgunitstructure = self.orgunitstructure[[
             'organisationunituid', 'level'] + uids + ['namelevel'+x[-1] for x in uids]]
+
+    def organisation_units_structure(self):
+        return self.orgunitstructure
+
+    def data_elements_structure(self):
+        def cleanup_name(column, alias):
+            return " ".join(["trim(regexp_replace(", column, ",'\s+', ' ', 'g')) AS ", alias, " , "])
+        sql = "\n".join([
+            "SELECT",
+            "dataelement.uid AS de_uid,",
+            cleanup_name("dataelement.name", "de_name"),
+            cleanup_name("dataelement.shortname", "de_shortname"),
+            "categoryoptioncombo.uid AS coc_uid,",
+            cleanup_name("categoryoptioncombo.name", "coc_name"),
+            "categoryoptioncombo.code AS coc_code,",
+            "categorycombo.uid AS cc_uid,",
+            cleanup_name("categorycombo.name", "cc_name"),
+            "categorycombo.code AS cc_code",
+            "FROM dataelement",
+            "JOIN categorycombo ON categorycombo.categorycomboid = dataelement.categorycomboid",
+            "JOIN categorycombos_optioncombos ON categorycombos_optioncombos.categorycomboid = categorycombo.categorycomboid",
+            "JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = categorycombos_optioncombos.categoryoptioncomboid",
+        ])
+        df = self.hook.get_pandas_df(sql)
+        df["de.coc"] = df.de_uid.str.cat(df.coc_uid, '.')
+        return df
