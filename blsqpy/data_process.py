@@ -35,6 +35,7 @@ class measured_serie(object):
             if len(sources) > prefer_threshold * len(self.data_list[self.preferred_source]):
                 self.preferred_source = source
         full_time = sorted(list(set(full_time)))
+
         if len(sources) == 1:
             out = self.data_list[sources[0]]
             out['source'] = sources[0]
