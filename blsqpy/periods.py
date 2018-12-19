@@ -195,10 +195,10 @@ class Periods:
     @staticmethod
     def add_period_columns(df):
         def to_monthly_period(x):
-            if x[1] != 'quarterly':
-                return Periods.split(x[0].strftime("%Y%m"), "monthly")[0]
-            else:
-                return None
+                if x[1] != 'quarterly':
+                    return Periods.split(x[0].strftime("%Y%m"), "monthly")[0]
+                else:
+                    return None
 
         def to_quarterly_period(x):
             return Periods.split(x[0].strftime("%Y%m"), "quarterly")[0]

@@ -103,7 +103,7 @@ class Dhis2(object):
 
         de_ids_condition = " OR ".join(list(map(to_sql_condition, de_ids)))
 
-        print(de_ids_condition)
+        #print(de_ids_condition)
 
         sql = """
 SELECT datavalue.value,
@@ -119,8 +119,9 @@ JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalu
 JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
 JOIN period ON period.periodid = datavalue.periodid join periodtype ON periodtype.periodtypeid = period.periodtypeid
 WHERE """+de_ids_condition+";"
-        print(sql)
+        #print(sql)
         df = self.hook.get_pandas_df(sql)
+        df.to_csv("./tmp/de.csv", index=None)
         df = Periods.add_period_columns(df)
         df = Levels.add_uid_levels_columns_from_path_column(df)
 
