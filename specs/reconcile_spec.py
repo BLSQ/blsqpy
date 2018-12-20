@@ -1,34 +1,25 @@
-import pandas as pd
-import numpy as np
+"""
+
+"""
 import json
-import blsqpy.reconcile
-from blsqpy.descriptor import Descriptor
-
-from mamba import description, context, it
-from expects import expect, equal
-from datetime import date
+import pandas as pd
+import blsqpy.data_process as dp
+from mamba import description, it
 
 
-with description("reconcil") as self:
-    with it("reconciliate will take the prefered source"):
-        config = Descriptor.load("./specs/reconcile/config")
-        df = pd.read_csv("./specs/reconcile/input.csv", sep=',')
-        print(" ************************ input ")
-        print(df)
+config = json.loads(open("./specs/config/sample_2_sources.json",
+                         encoding='utf-8').read())
+input_data = pd.read_csv('./specs/reconcile/input.csv', sep=';')
 
-        reconciled_data = blsqpy.reconcile.reconciliate(config, df)
-
-        print(" ************************ outputs ")
-        reconciled_df = reconciled_data['pills']['stock']
-        print(reconciled_df)
-
-        print(" ************************ expected outputs ")
-        expected_reconcile = pd.read_csv(
-            "./specs/reconcile/expected.csv", sep=',')
-        print(expected_reconcile)
-
+with description("reconciliation") as self:
+    with it("sequential reconciliation with prefered source"):
+        config = json.loads(open("./specs/config/sample_2_sources.json", encoding='utf-8').read())
+        input_data = pd.read_csv('./specs/reconcile/input.csv', sep=';')
+        expected_data = pd.read_csv('./specs/reconcile/expected.csv', sep=';')
+        serie = dp.measured_serie(mapped_data, config, 'pills', 'delivered', 'moh')
+        reconciled_serie = serie.reconcile_series()
         pd.testing.assert_frame_equal(
-            reconciled_df.reset_index(drop=True),
-            expected_reconcile.reset_index(drop=True),
+            reconciled_serie.data,
+            expected_data.reset_index(drop=True),
             check_dtype=False,
-        )
+            )

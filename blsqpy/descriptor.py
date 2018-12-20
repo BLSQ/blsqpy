@@ -7,11 +7,11 @@ from collections import namedtuple
 class Descriptor():
     @staticmethod
     def load(name):
-        with open(name+".json") as f:
+        with open(name+".json", encoding='utf-8') as f:
             return json.loads(f.read(), object_hook=lambda d: namedtuple('X'+"__".join(d.keys()), d.keys())(*d.values()))
     @staticmethod
     def load_string(content):
-        return json.loads(content, object_hook=lambda d: namedtuple('X'+"__".join(d.keys()), d.keys())(*d.values()))            
+        return json.loads(content, object_hook=lambda d: namedtuple('X'+"__".join(d.keys()), d.keys())(*d.values()))
 
     @staticmethod
     def as_items(collection):
