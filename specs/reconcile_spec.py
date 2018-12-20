@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import json
 import blsqpy.reconcile
 
@@ -14,17 +15,26 @@ with description("dhis2 split") as self:
         raw_config = None
         with open("./specs/reconcile/config.json") as f:
             raw_config = json.loads(f.read())
-        #print(raw_config)
+        # print(raw_config)
 
         print(" ************************ input ")
         print(df)
-        reconciled_data = blsqpy.reconcile.json_reconciliation(raw_config, df, reconcile_only=True)
+        reconciled_data = blsqpy.reconcile.json_reconciliation(
+            raw_config, df, reconcile_only=True)
         print(" ************************ outputs ")
-        #for orgunit in ["ADlqHWi5XoF","G93DKvb6AoO","Lfne3gUweGX"]:
-        #    print(reconciled_data['pills']['stock']['data_element_dict'][orgunit]['moh'])
-        #    print(reconciled_data['pills']['stock']['data_element_dict'][orgunit]['ngo'])
+        reconcile = reconciled_data['pills']['stock']
         print(reconciled_data['pills']['stock'])
 
-        #print(reconciled_data)
+        print(" ************************ expected outputs ")
+        expected_reconcile = pd.read_csv("./specs/reconcile/expected.csv", sep=',', dtype={
+            "orgunit": object
+            #np.str, monthly, pills_stock, pills_stock_source
+        })
+        print(expected_reconcile)
 
-
+        pd.testing.assert_frame_equal(
+            reconcile.reset_index( drop=True),
+            expected_reconcile.reset_index( drop=True),
+            check_dtype=False,
+            check_index_type=False,
+        )

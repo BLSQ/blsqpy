@@ -66,7 +66,6 @@ class measured_serie(object):
                               bc_type = 'natural',
                               extrapolate=None)
 
-
         return [fit_data, spliner]
 
     def benchmark_serie(self):

@@ -45,7 +45,7 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
     # make sure columns exists even if no data
     for de, column in mappings.items():
         if de not in df.columns:
-            print("WARN adding empty columnt for", de, column)
+            print("WARN adding empty column for", de, column)
             df[de] = np.nan
 
     df = df.rename(index=str, columns=mappings)
@@ -61,7 +61,7 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
         # if all column are nan, keep nan
 
         df[column] = df[columns_to_sum].sum(axis=1, min_count=1)
-        if drop_intermediate: 
+        if drop_intermediate:
             df.drop(columns_to_sum, axis=1, inplace=True)
-            
+
     return df
