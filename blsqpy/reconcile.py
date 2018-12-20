@@ -4,24 +4,17 @@ from blsqpy.descriptor import Descriptor
 import pandas as pd
 
 
-def json_reconciliation(datavar_json, datavar_df, reconcile_only=False):
-    from objectpath import Tree
-    jsonTree = Tree(datavar_json)
-    config = Descriptor.load_string(json.dumps(datavar_json))
-    return reconcile(config, datavar_df)
-
-
-def reconcile(config, datavar_df):
+def reconciliate(config, datavar_df):
     dict_of_dicts = {}
     for activity_code, activity in Descriptor.as_items(config.activities):
-        dict_of_dicts[activity_code] = reconcile_activity(
+        dict_of_dicts[activity_code] = reconciliate_activity(
             activity,
             activity_code,
             datavar_df)
     return dict_of_dicts
 
 
-def reconcile_activity(activity, activity_code, datavar_df):
+def reconciliate_activity(activity, activity_code, datavar_df):
     dict_of_dataframe = {}
     for state_code, state in Descriptor.as_items(activity.states):
         data_united_df = pd.DataFrame()
@@ -40,10 +33,10 @@ def reconcile_activity(activity, activity_code, datavar_df):
                 'float'
             )
 
-            # This is the tricky part because the code of Grégoire assumes
-            # a column name monthly what it's not necessarily the case
-            # We have to see how to adapt the latter to be general and then supress
-            # that part
+            # if later you need to have reall monthly and quarterly period filled
+            # see Periods.add_period_columns as an example usage to add periodicity info
+            # currently the period column can be quarter or monthly
+            # the dataprocess function looks for monthly
 
             df_agg = df_agg.rename(
                 index=str,
