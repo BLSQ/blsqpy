@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "dhis2_connection_id": "dhis2_sn_cartesanitaire"
+  },
+  "activities": {
+    "pills": {
+      "name": "Pilule",
+      "states": {
+        "stock": {
+          "sources": {
+            "moh": { "uids": ["de1.default"] },
+            "ngo": { "uids": ["de2.default"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "moh",
+            "data_type": "stock",
+            "impute": {},
+            "comments": [""]
+          }
+        }
+      }
+    }
+  }
+}
