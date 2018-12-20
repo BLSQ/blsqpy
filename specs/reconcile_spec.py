@@ -9,9 +9,8 @@ from expects import expect, equal
 from datetime import date
 
 
-with description("dhis2 split") as self:
-
-    with it("converts month to quarter"):
+with description("reconcil") as self:
+    with it("reconciliate will take the prefered source"):
         config = Descriptor.load("./specs/reconcile/config")
         df = pd.read_csv("./specs/reconcile/input.csv", sep=',')
         print(" ************************ input ")
