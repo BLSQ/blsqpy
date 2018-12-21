@@ -7,11 +7,11 @@ import blsqpy.mapping as mapping
 from pandas.testing import assert_frame_equal
 from collections import OrderedDict
 
+config = Descriptor.load("./specs/fixtures/config/sample")
+
+
 with description('mapping') as self:
-
     with it('build mapping when multiple uuid'):
-        config = Descriptor.load("./specs/config/sample")
-
         expect(mapping.to_mappings(config.activities.pills, "pills")).to(
             equal(OrderedDict([
                 ('s4CxsmoqdRj.oFtySBIkit2', 'pills_active_moh'),
@@ -22,8 +22,6 @@ with description('mapping') as self:
                 ('s4CxsmoqdRj.pQqm0IZ6AJ3', 'pills_new_structure_moh')])))
 
     with it('build expressions when multiple uuid'):
-        config = Descriptor.load("./specs/config/sample")
-
         expect(mapping.to_expressions(config.activities.pills, "pills")).to(
             equal({'pills_delivered_moh': [
                 'pills_delivered_1_moh',
@@ -32,8 +30,7 @@ with description('mapping') as self:
             ]}))
 
     with it('maps a dataframe with from coc.de to activity_state_source columns'):
-        config = Descriptor.load("./specs/config/sample")
-        df = pd.read_csv("./specs/extract/rotated.csv", sep=',')
+        df = pd.read_csv("./specs/fixtures/extract/rotated.csv", sep=',')
         mapped_df = mapping.map_from_activity(
             df, config.activities.pills, "pills")
         print(df)
@@ -41,7 +38,7 @@ with description('mapping') as self:
         print(mapped_df)
 
         #mapped_df.to_csv("./specs/mapping/mapped.csv", sep=',')
-        expected_mapped = pd.read_csv("./specs/mapping/mapped.csv", sep=',')
+        expected_mapped = pd.read_csv("./specs/fixtures/mapping/mapped.csv", sep=',')
         print("*************** expected_mapped")
         print(expected_mapped)
 

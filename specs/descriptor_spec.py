@@ -7,5 +7,5 @@ from blsqpy.descriptor import Descriptor
 
 with description('Parsing json config') as self:
     with it('loads them as namedTupples'):
-        config = Descriptor.load("./specs/config/demo")
+        config = Descriptor.load("./specs/fixtures/config/demo")
         expect(config.demo.test.hello).to(equal("world"))

@@ -27,7 +27,7 @@ class MockHook:
         csv = self.sqls_to_dfs[sql]
         #print(sql, csv)
 
-        df = pd.read_csv("./specs/dhis2/sql_"+csv["file"]+".csv")
+        df = pd.read_csv("./specs/fixtures/dhis2/sql_"+csv["file"]+".csv")
 
         for date_column in csv.get("parse_dates", []):
             df[date_column] = pd.to_datetime(
@@ -68,7 +68,7 @@ with description('Dhis2') as self:
 
         df = dhis2.get_data(['s4CxsmoqdRj', 'fSD1ZZo4hTs.HllvX50cXC0'])
 
-        expected_df = pd.read_csv("./specs/dhis2/expected_datavalues.csv")
+        expected_df = pd.read_csv("./specs/fixtures/dhis2/expected_datavalues.csv")
         df.index = df.index.map(str)
         print(expected_df)
 

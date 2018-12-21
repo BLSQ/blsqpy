@@ -9,7 +9,7 @@ from pandas.testing import assert_frame_equal
 with description('extract') as self:
 
     with it('extract data elements from config'):
-        config = Descriptor.load("./specs/config/sample")
+        config = Descriptor.load("./specs/fixtures/config/sample")
 
         data_elements = extract.to_data_elements(config.activities.pills)
         expect(data_elements).to(equal([
@@ -22,10 +22,10 @@ with description('extract') as self:
         ))
 
     with it("rotate data_element.category_option_combo as columns"):
-        df = pd.read_csv("./specs/extract/raw.csv", sep=',')
+        df = pd.read_csv("./specs/fixtures/extract/raw.csv", sep=',')
         df_rotated = extract.rotate_de_coc_as_columns(df)
         #df_rotated.to_csv("./specs/extract/rotated.csv")
-        expected_rotated = pd.read_csv("./specs/extract/rotated.csv", sep=',')
+        expected_rotated = pd.read_csv("./specs/fixtures/extract/rotated.csv", sep=',')
         expected_rotated.set_index(['period', 'orgunit'], inplace=True)
         print(expected_rotated)
         print(df_rotated)

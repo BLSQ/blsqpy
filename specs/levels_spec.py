@@ -47,7 +47,7 @@ with description('levels') as self:
 
         print("add_uid_levels_columns_from_path_column",df)
         # df.to_csv("./specs/extract/levels.csv")
-        expected_levels = pd.read_csv("./specs/extract/levels.csv", sep=',')
+        expected_levels = pd.read_csv("./specs/fixtures/extract/levels.csv", sep=',')
         print(expected_levels)
         pd.testing.assert_frame_equal(
             df,
