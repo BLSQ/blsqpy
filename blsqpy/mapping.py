@@ -45,9 +45,18 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
     # make sure columns exists even if no data
     for de, column in mappings.items():
         if de not in df.columns:
-            print("WARN adding empty column for", de, column)
-            df[de] = np.nan
-
+            #Check if the're children of the de in the df columns
+            child_de_idx=[dfcol.split('.')[0]==de for dfcol in df.columns].index(True)
+            #If so aggregate all of them
+            if child_de_idx:
+                child_columns=df.columns[child_de_idx].tolist()
+                print("WARN implicit aggregation for ", de," from ", child_columns)
+                df[de] =df[child_columns].sum(axis=1, min_count=1)
+            #Otherwise create an empty column                
+            else:
+                print("WARN adding empty column for", de, column)
+                df[de] = np.nan
+            
     df = df.rename(index=str, columns=mappings)
 
     # make sure we consider these a numerics, or + eval will concatenate instead of summing
