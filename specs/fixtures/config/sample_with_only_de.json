@@ -1,0 +1,16 @@
+{
+  "activities": {
+    "pills": {
+      "name": "Pilule",
+      "states": {
+        "aggregated": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
