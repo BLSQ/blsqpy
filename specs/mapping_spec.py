@@ -10,7 +10,27 @@ from collections import OrderedDict
 config = Descriptor.load("./specs/fixtures/config/sample")
 
 
+def test_from_rotated_to_mapped(config, rotated_csv, mapped_csv):
+    df = pd.read_csv("./specs/fixtures/extract/"+rotated_csv, sep=',')
+    mapped_df = mapping.map_from_activity(
+        df, config.activities.pills, "pills")
+    print(df)
+    print("*************** mapped_df")
+    print(mapped_df)
+
+    #mapped_df.to_csv("./specs/mapping/mapped.csv", sep=',')
+    expected_mapped = pd.read_csv(
+        "./specs/fixtures/mapping/"+mapped_csv, sep=',')
+    print("*************** expected_mapped")
+    print(expected_mapped)
+
+    assert_frame_equal(
+        mapped_df.reset_index(drop=True),
+        expected_mapped,
+        check_dtype=False)
+
 with description('mapping') as self:
+
     with it('build mapping when multiple uuid'):
         expect(mapping.to_mappings(config.activities.pills, "pills")).to(
             equal(OrderedDict([
@@ -30,19 +50,8 @@ with description('mapping') as self:
             ]}))
 
     with it('maps a dataframe with from coc.de to activity_state_source columns'):
-        df = pd.read_csv("./specs/fixtures/extract/rotated.csv", sep=',')
-        mapped_df = mapping.map_from_activity(
-            df, config.activities.pills, "pills")
-        print(df)
-        print("*************** mapped_df")
-        print(mapped_df)
+        test_from_rotated_to_mapped(config, 'rotated.csv', 'mapped.csv')
 
-        #mapped_df.to_csv("./specs/mapping/mapped.csv", sep=',')
-        expected_mapped = pd.read_csv("./specs/fixtures/mapping/mapped.csv", sep=',')
-        print("*************** expected_mapped")
-        print(expected_mapped)
-
-        assert_frame_equal(
-            mapped_df.reset_index(drop=True),
-            expected_mapped,
-            check_dtype=False)
+    with it('maps a dataframe with from coc.* to activity_state_source column when not category combo option is provided'):
+        config = Descriptor.load("./specs/fixtures/config/sample_with_only_de")
+        test_from_rotated_to_mapped(config, 'rotated_with_only_de.csv', 'mapped_with_only_de.csv')
