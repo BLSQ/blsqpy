@@ -1,7 +1,7 @@
-orgunit,period,pills_delivered_reconciled,source
-ADlqHWi5XoF,201810,10,pills_delivered_ngo
-ADlqHWi5XoF,201811,12,pills_delivered_ngo
-G93DKvb6AoO,201810,9,pills_delivered_moh
-G93DKvb6AoO,201811,12,pills_delivered_ngo
-Lfne3gUweGX,201810,10,pills_delivered_moh
-Lfne3gUweGX,201811,13,pills_delivered_ngo
+orgunit;period;pills_delivered_reconciled;source
+ADlqHWi5XoF;201810;10;pills_delivered_ngo
+ADlqHWi5XoF;201811;12;pills_delivered_ngo
+G93DKvb6AoO;201810;9;pills_delivered_moh
+G93DKvb6AoO;201811;12;pills_delivered_ngo
+Lfne3gUweGX;201810;10;pills_delivered_moh
+Lfne3gUweGX;201811;13;pills_delivered_ngo
