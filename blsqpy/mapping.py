@@ -46,12 +46,11 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
     for de, column in mappings.items():
         if de not in df.columns:
             #Check if the're children of the de in the df columns
-            child_de_idx=[dfcol.split('.')[0]==de for dfcol in df.columns].index(True)
+            child_de_cols=[dfcol for dfcol in df.columns if dfcol.split('.')[0]==de]
             #If so aggregate all of them
-            if child_de_idx:
-                child_columns=df.columns[child_de_idx].tolist()
-                print("WARN implicit aggregation for ", de," from ", child_columns)
-                df[de] =df[child_columns].sum(axis=1, min_count=1)
+            if child_de_cols:
+                print("WARN implicit aggregation for ", de," from ", child_de_cols)
+                df[de] =df[child_de_cols].sum(axis=1, min_count=1)
             #Otherwise create an empty column                
             else:
                 print("WARN adding empty column for", de, column)
