@@ -49,6 +49,9 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
             child_de_cols=[dfcol for dfcol in df.columns if dfcol.split('.')[0]==de]
             #If so aggregate all of them
             if child_de_cols:
+                # make sure we consider these a numerics, or + eval will concatenate instead of summing
+                for column in child_de_cols:
+                    df[column] = pd.to_numeric(df[column],errors='ignore', downcast='float')
                 print("WARN implicit aggregation for ", de," from ", child_de_cols)
                 df[de] =df[child_de_cols].sum(axis=1, min_count=1)
             #Otherwise create an empty column                
