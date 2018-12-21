@@ -1,4 +1,3 @@
 #!/bin/bash
 
-mamba --format=documentation --enable-coverage
-coverage report ./blsqpy/*.py
+mamba --format=documentation --enable-coverage && coverage report ./blsqpy/*.py
