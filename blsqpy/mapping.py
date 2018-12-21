@@ -42,6 +42,7 @@ def to_mappings(activity, activity_code):
 def map_from_activity(df, activity, activity_code, drop_intermediate=True):
 
     mappings = to_mappings(activity, activity_code)
+    columns_to_drop = []
     # make sure columns exists even if no data
     for de, column in mappings.items():
         if de not in df.columns:
@@ -54,11 +55,12 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
                     df[column] = pd.to_numeric(df[column],errors='ignore', downcast='float')
                 print("WARN implicit aggregation for ", de," from ", child_de_cols)
                 df[de] =df[child_de_cols].sum(axis=1, min_count=1)
-            #Otherwise create an empty column                
+                columns_to_drop.extend(child_de_cols)
+            #Otherwise create an empty column
             else:
                 print("WARN adding empty column for", de, column)
                 df[de] = np.nan
-            
+
     df = df.rename(index=str, columns=mappings)
 
     # make sure we consider these a numerics, or + eval will concatenate instead of summing
@@ -74,5 +76,8 @@ def map_from_activity(df, activity, activity_code, drop_intermediate=True):
         df[column] = df[columns_to_sum].sum(axis=1, min_count=1)
         if drop_intermediate:
             df.drop(columns_to_sum, axis=1, inplace=True)
+
+    if drop_intermediate:
+        df.drop(columns_to_drop, axis=1, inplace=True)
 
     return df
