@@ -13,9 +13,10 @@ with description("reconciliation") as self:
         input_data = pd.read_csv('./specs/reconcile/input.csv', sep=';')
         expected_data = pd.read_csv('./specs/reconcile/expected.csv', sep=';')
         serie = dp.measured_serie(input_data, config, 'pills', 'delivered', 'moh')
-        reconciled_serie = serie.reconcile_series()
+        serie.reconcile_series()
+        reconciled_serie =serie.data
         pd.testing.assert_frame_equal(
-            reconciled_serie.data,
+            reconciled_serie,
             expected_data.reset_index(drop=True),
             check_dtype=False,
             )
