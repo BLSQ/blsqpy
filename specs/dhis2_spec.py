@@ -86,7 +86,6 @@ with description('Dhis2') as self:
 
     with it("get_data_set_data_elements return list of data element within a data set"):
         sqls = {
-
             "select dataset.uid as data_set_uid, dataelement.uid as data_element_uid  \n FROM dataset  \n JOIN datasetelement ON datasetelement.datasetid = dataset.datasetid   \n JOIN dataelement ON dataelement.dataelementid = datasetelement.dataelementid  \n WHERE dataset.uid = 'ds_id'  ":
             {
                 "file": "get_data_set_data_elements"
@@ -94,3 +93,22 @@ with description('Dhis2') as self:
         }
         dhis2 = Dhis2(MockHook.with_extra_sqls(sqls))
         df = dhis2.get_data_set_data_elements("ds_id")
+        print(df)
+
+    with it("get_data_set_organisation_units"):
+        sqls = {
+            "select dataset.uid as dataset_uid,lower(periodtype.name) as frequency,  \n organisationunit.uid as organisation_unit_uid, organisationunit.path FROM dataset  \n JOIN periodtype ON periodtype.periodtypeid = dataset.periodtypeid   \n JOIN datasetsource ON datasetsource.datasetid = dataset.datasetid   \n JOIN organisationunit ON organisationunit.organisationunitid = datasetsource.sourceid  \n WHERE dataset.uid = 'ds_id'  ":
+                {
+                    "file": "get_data_set_organisation_units"
+                }
+        }
+        dhis2 = Dhis2(MockHook.with_extra_sqls(sqls))
+        df = dhis2.get_data_set_organisation_units("ds_id")
+        print(df)
+        #df.to_csv("./specs/fixtures/dhis2/expected_get_data_set_organisation_units.csv", index=False)
+        expected_df = pd.read_csv(
+            "./specs/fixtures/dhis2/expected_get_data_set_organisation_units.csv")
+
+        pd.testing.assert_frame_equal(
+            df,
+            expected_df)
