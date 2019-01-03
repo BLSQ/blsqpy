@@ -22,7 +22,7 @@ class Coverage:
         coverage_df = df.merge(df_ou, on=self.aggregation_level_uid_column)
         coverage_df["values_coverage_ratio"] = coverage_df["values_count"] / \
             coverage_df[facility_level_count_column]
-        return coverage_df.sort_values("values_coverage_ratio", ascending=False)
+        return coverage_df
 
     def for_data_set_organisation_units(self, dataset_id):
         data_set_organisation_units = self.dhis.get_data_set_organisation_units(

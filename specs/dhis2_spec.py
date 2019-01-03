@@ -31,7 +31,7 @@ class MockHook:
 
         for date_column in csv.get("parse_dates", []):
             df[date_column] = pd.to_datetime(
-                df[date_column], format='%Y-%m-%d',errors='ignore')
+                df[date_column], format='%Y-%m-%d', errors='ignore')
 
         return df
 
@@ -68,12 +68,14 @@ with description('Dhis2') as self:
 
         df = dhis2.get_data(['s4CxsmoqdRj', 'fSD1ZZo4hTs.HllvX50cXC0'])
 
-        expected_df = pd.read_csv("./specs/fixtures/dhis2/expected_datavalues.csv")
+        expected_df = pd.read_csv(
+            "./specs/fixtures/dhis2/expected_datavalues.csv")
         df.index = df.index.map(str)
         print(expected_df)
 
         expected_df.index = expected_df.index.map(str)
-        expected_df['enddate'] = pd.to_datetime(df['enddate'], format='%Y-%m-%d',errors='ignore')
+        expected_df['enddate'] = pd.to_datetime(
+            df['enddate'], format='%Y-%m-%d', errors='ignore')
         expected_df['monthly'] = expected_df.monthly.map(str)
 
         pd.testing.assert_frame_equal(
@@ -81,3 +83,14 @@ with description('Dhis2') as self:
             expected_df,
             check_index_type=False,
             check_dtype=False)
+
+    with it("get_data_set_data_elements return list of data element within a data set"):
+        sqls = {
+
+            "select dataset.uid as data_set_uid, dataelement.uid as data_element_uid  \n FROM dataset  \n JOIN datasetelement ON datasetelement.datasetid = dataset.datasetid   \n JOIN dataelement ON dataelement.dataelementid = datasetelement.dataelementid  \n WHERE dataset.uid = 'ds_id'  ":
+            {
+                "file": "get_data_set_data_elements"
+            }
+        }
+        dhis2 = Dhis2(MockHook.with_extra_sqls(sqls))
+        df = dhis2.get_data_set_data_elements("ds_id")
