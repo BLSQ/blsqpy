@@ -8,3 +8,4 @@ from . import s3export_hook
 from . import extract
 from . import mapping
 from . import data_process
+from . import coverage
