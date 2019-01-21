@@ -28,7 +28,7 @@ class Dhis2(object):
     def __init__(self, hook):
         """Create a dhis instance."""
         self.hook = hook
-        #self.organisationunit = hook.get_pandas_df(
+        # self.organisationunit = hook.get_pandas_df(
         #    "SELECT organisationunitid, uid, name, path FROM organisationunit;")
         self.dataelement = hook.get_pandas_df(
             "SELECT uid, name, dataelementid, categorycomboid FROM dataelement;")
@@ -37,13 +37,18 @@ class Dhis2(object):
             "SELECT uid, name, dataelementgroupid FROM dataelementgroup;")
         self.dataelementgroupmembers = hook.get_pandas_df(
             "SELECT dataelementid, dataelementgroupid FROM dataelementgroupmembers;")
-        self.orgunitstructure = hook.get_pandas_df(
-            "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;")
+
+        # replace resources sql "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;")
+        # by sql on orgunit and computation
+        self.orgunitstructure = Levels.add_uid_levels_columns_from_path_column(
+            hook.get_pandas_df("SELECT uid as organisationunituid, path from organisationunit;"),
+            start=1, end_offset=2, with_level=True
+        )
         self.categoryoptioncombo = hook.get_pandas_df(
             "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;")
         self.categorycombos_optioncombos = hook.get_pandas_df(
             "SELECT *  FROM categorycombos_optioncombos;")
-        #self.label_org_unit_structure()
+        # self.label_org_unit_structure()
         # TODO : should find a way to store the data access info securely
         # so we don't have to keep attributes we only use for very
         # specific usages (ex: categoryoptioncombo)
