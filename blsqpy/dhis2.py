@@ -59,33 +59,64 @@ class Dhis2(object):
             self.categoryoptioncombo, on='categoryoptioncomboid', suffixes=['_de', '_cc'])
         return de_catecombos_options_full
 
-    def get_reported_de(self):
+    def get_reported_de(self, aggregation_level=3, data_element_uids=None):
         # TODO : allow tailored reported values extraction
         """Get the amount of data reported for each data elements, aggregated at Level 3 level."""
-        reported_de = pd.read_sql_query("SELECT datavalue.periodid, datavalue.dataelementid, _orgunitstructure.uidlevel3, count(datavalue) FROM datavalue JOIN _orgunitstructure ON _orgunitstructure.organisationunitid = datavalue.sourceid GROUP BY _orgunitstructure.uidlevel3, datavalue.periodid, datavalue.dataelementid;",
-                                        self.connexion)
-        reported_de = reported_de.merge(self.organisationunit,
-                                        left_on='uidlevel3', right_on='uid',
-                                        how='inner')
-        reported_de = reported_de.merge(self.dataelement,
-                                        left_on='dataelementid',
-                                        right_on='dataelementid',
-                                        suffixes=['_orgUnit', '_data_element'])
-        reported_de = reported_de.merge(self.periods)
-        reported_de = reported_de.merge(self.orgunitstructure,
-                                        left_on='uidlevel3',
-                                        right_on='organisationunituid')
-        reported_de = reported_de[['quarterly', 'monthly',
-                                   'uidlevel2', 'namelevel2',
-                                   'uidlevel3_x', 'namelevel3',
-                                   'count',
-                                   'uid_data_element', 'name_data_element']]
-        reported_de.columns = ['quarterly', 'monthly',
-                               'uidlevel2', 'namelevel2',
-                               'uidlevel3', 'namelevel3',
-                               'count',
-                               'uid_data_element', 'name_data_element']
+        data_elements = " , ".join(
+            list(map(lambda x: "'"+x+"'", data_element_uids)))
+        data_element_selector = "select dataelement.dataelementid from dataelement where dataelement.uid in (" + \
+            data_elements+")"
+        sql = [
+            "SELECT period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency , dataelement.uid as deid, categoryoptioncombo.uid as coc_id , _orgunitstructure.uidlevel" +
+            str(aggregation_level) +
+            ", count(datavalue) values_count",
+            "FROM datavalue ",
+            "JOIN _orgunitstructure ON _orgunitstructure.organisationunitid = datavalue.sourceid ",
+            "JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid ",
+            "JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid ",
+            "JOIN period ON period.periodid = datavalue.periodid ",
+            "JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid",
+            "WHERE datavalue.dataelementid in (" +
+            data_element_selector + " )",
+            "GROUP BY _orgunitstructure.uidlevel" +
+            str(aggregation_level) +
+            ", period.startdate, period.enddate, periodtype.name, dataelement.uid, categoryoptioncombo.uid;"
+        ]
+        sql = " \n ".join(map(lambda s: s+" ", sql))
+        print(sql)
+        reported_de = self.hook.get_pandas_df(sql)
+        reported_de = Periods.add_period_columns(reported_de)
         return reported_de
+
+    def get_data_set_organisation_units(self, dataset_uid):
+        sql = [
+            "select dataset.uid as dataset_uid,"
+            "lower(periodtype.name) as frequency,",
+            "organisationunit.uid as organisation_unit_uid, organisationunit.path "
+            "FROM dataset",
+            "JOIN periodtype ON periodtype.periodtypeid = dataset.periodtypeid ",
+            "JOIN datasetsource ON datasetsource.datasetid = dataset.datasetid ",
+            "JOIN organisationunit ON organisationunit.organisationunitid = datasetsource.sourceid",
+            "WHERE dataset.uid = '"+dataset_uid+"' ",
+        ]
+
+        sql = " \n ".join(map(lambda s: s+" ", sql))
+        data_set_ous_df = self.hook.get_pandas_df(sql)
+        data_set_ous_df = Levels.add_uid_levels_columns_from_path_column(
+            data_set_ous_df, start=1, end_offset=1)
+        return data_set_ous_df
+
+    def get_data_set_data_elements(self, dataset_uid):
+        sql = [
+            "select dataset.uid as data_set_uid, dataelement.uid as data_element_uid",
+            "FROM dataset",
+            "JOIN datasetelement ON datasetelement.datasetid = dataset.datasetid ",
+            "JOIN dataelement ON dataelement.dataelementid = datasetelement.dataelementid",
+            "WHERE dataset.uid = '"+dataset_uid+"' ",
+        ]
+        sql = " \n ".join(map(lambda s: s+" ", sql))
+        data_set_des_df = self.hook.get_pandas_df(sql)
+        return data_set_des_df
 
     def get_data(self, de_ids):
         # TODO : allow tailored reported values extraction
@@ -103,7 +134,7 @@ class Dhis2(object):
 
         de_ids_condition = " OR ".join(list(map(to_sql_condition, de_ids)))
 
-        #print(de_ids_condition)
+        # print(de_ids_condition)
 
         sql = """
 SELECT datavalue.value,
@@ -117,9 +148,10 @@ FROM datavalue
 JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
 JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
 JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
-JOIN period ON period.periodid = datavalue.periodid join periodtype ON periodtype.periodtypeid = period.periodtypeid
+JOIN period ON period.periodid = datavalue.periodid
+JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid
 WHERE """+de_ids_condition+";"
-        #print(sql)
+        # print(sql)
         df = self.hook.get_pandas_df(sql)
         df = Periods.add_period_columns(df)
         df = Levels.add_uid_levels_columns_from_path_column(df)
