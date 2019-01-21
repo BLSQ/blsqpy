@@ -14,11 +14,14 @@ class Levels:
         return levels - 1
 
     @staticmethod
-    def add_uid_levels_columns_from_path_column(df, start = 2, end_offset= -1):
+    def add_uid_levels_columns_from_path_column(df, start = 2, end_offset= -1, with_level= False):
       max_level = Levels.max_level(df)
 
       def to_level(select_level, x):
             return Levels.to_level_uid(x[0], select_level)
+
+      if with_level:
+        df["level"] = df.path.apply(lambda x: len(x.split('/')) - 1)
 
       for level in range(start, max_level + end_offset):
             df["uidlevel"+str(level)] = df[['path']

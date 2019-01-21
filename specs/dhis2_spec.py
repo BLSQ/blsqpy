@@ -8,10 +8,9 @@ init_sql_to_df = {
     "SELECT uid, name, dataelementid, categorycomboid FROM dataelement;": {"file": "dataelements"},
     "SELECT uid, name, dataelementgroupid FROM dataelementgroup;": {"file": "dataelementgroups"},
     "SELECT dataelementid, dataelementgroupid FROM dataelementgroupmembers;": {"file": "dataelementgroupmembers"},
-    "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;": {"file": "orgunitstructure"},
+    "SELECT uid as organisationunituid, path from organisationunit;":{"file": "orgunits"},
     "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;": {"file": "categoryoptioncombos"},
     "SELECT *  FROM categorycombos_optioncombos;": {"file": "cocs"},
-    "SELECT *  FROM _periodstructure;": {"file": "periodstructure"}
 }
 
 
