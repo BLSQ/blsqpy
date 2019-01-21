@@ -28,8 +28,8 @@ class Dhis2(object):
     def __init__(self, hook):
         """Create a dhis instance."""
         self.hook = hook
-        self.organisationunit = hook.get_pandas_df(
-            "SELECT organisationunitid, uid, name, path FROM organisationunit;")
+        #self.organisationunit = hook.get_pandas_df(
+        #    "SELECT organisationunitid, uid, name, path FROM organisationunit;")
         self.dataelement = hook.get_pandas_df(
             "SELECT uid, name, dataelementid, categorycomboid FROM dataelement;")
         self.dataelement.name = self.dataelement.name.str.replace("\n|\r", " ")
@@ -43,8 +43,7 @@ class Dhis2(object):
             "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;")
         self.categorycombos_optioncombos = hook.get_pandas_df(
             "SELECT *  FROM categorycombos_optioncombos;")
-        self.periods = hook.get_pandas_df("SELECT *  FROM _periodstructure;")
-        self.label_org_unit_structure()
+        #self.label_org_unit_structure()
         # TODO : should find a way to store the data access info securely
         # so we don't have to keep attributes we only use for very
         # specific usages (ex: categoryoptioncombo)
