@@ -32,7 +32,7 @@ class PostgresHook(object):
         else:
             self.connection = props
 
-    def get_pandas_df(self, sql, parameters=None):
+    def get_pandas_df(self, sql, parameters={"chunksize": 1000}):
         with closing(self.get_conn()) as conn:
             return psql.read_sql(sql, con=conn, params=parameters)
 

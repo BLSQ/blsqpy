@@ -176,12 +176,12 @@ class Periods:
     def split(period, frequency):
         cache_key = period+"-"+frequency
         if cache_key in CACHE:
-            return list(CACHE[cache_key])
+            return CACHE[cache_key]
         date_range = Periods.as_date_range(period)
         mapper = CLASSES_MAPPING[frequency]
         periods = tuple(mapper().call(date_range))
         CACHE[cache_key] = periods
-        return list(periods)
+        return periods
 
     @staticmethod
     def as_date_range(period):

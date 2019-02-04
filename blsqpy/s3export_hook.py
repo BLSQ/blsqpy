@@ -1,4 +1,6 @@
 import boto3
+from botocore.exceptions import ClientError
+
 import pandas as pd
 from blsqpy.dot import Dot
 
@@ -40,3 +42,41 @@ class S3ExportsHook:
             Bucket=self.connection["BUCKET_NAME"], Key=file_key)
         df = pd.read_csv(obj['Body'], **panda_options)
         return df
+
+    def load_file(self,
+                  filename,
+                  key,
+                  bucket_name=None,
+                  replace=False,
+                  encrypt=False):
+        """
+        UpLoads a local file to S3
+        """
+
+        print("uploading "+filename+" to "+bucket_name)
+
+        if not replace and self.check_for_key(key, bucket_name):
+            raise ValueError("The key {key} already exists.".format(key=key))
+
+        extra_args = {}
+        if encrypt:
+            extra_args['ServerSideEncryption'] = "AES256"
+
+        client = self.get_conn()
+        client.upload_file(filename, bucket_name, key, ExtraArgs=extra_args)
+
+    def check_for_key(self, key, bucket_name=None):
+        """
+        Checks if a key exists in a bucket
+        :param key: S3 key that will point to the file
+        :type key: str
+        :param bucket_name: Name of the bucket in which the file is stored
+        :type bucket_name: str
+        """
+
+        try:
+            self.get_conn().head_object(Bucket=bucket_name, Key=key)
+            return True
+        except ClientError as e:
+            print(e.response["Error"]["Message"])
+            return False
