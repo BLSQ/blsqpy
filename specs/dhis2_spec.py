@@ -2,13 +2,15 @@ import pandas as pd
 from mamba import description, context, it
 from expects import expect, equal
 from blsqpy.dhis2 import Dhis2
+from blsqpy.descriptor import Descriptor
+from blsqpy.dhis2_dumper import Dhis2Dumper
 
 init_sql_to_df = {
     "SELECT organisationunitid, uid, name, path FROM organisationunit;": {"file": "organisationunit"},
     "SELECT uid, name, dataelementid, categorycomboid FROM dataelement;": {"file": "dataelements"},
     "SELECT uid, name, dataelementgroupid FROM dataelementgroup;": {"file": "dataelementgroups"},
     "SELECT dataelementid, dataelementgroupid FROM dataelementgroupmembers;": {"file": "dataelementgroupmembers"},
-    "SELECT uid as organisationunituid, path from organisationunit;":{"file": "orgunits"},
+    "SELECT uid as organisationunituid, path from organisationunit;": {"file": "orgunits"},
     "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;": {"file": "categoryoptioncombos"},
     "SELECT *  FROM categorycombos_optioncombos;": {"file": "cocs"},
 }
@@ -38,6 +40,21 @@ class MockHook:
     def with_extra_sqls(sqls):
         all_sqls = {**sqls, **init_sql_to_df}
         return MockHook(all_sqls)
+
+
+class MockS3Hook:
+    def __init__(self):
+        print("s3 mock")
+        self.uploads = []
+
+    def load_file(self,
+                  filename,
+                  key,
+                  bucket_name=None,
+                  replace=False,
+                  encrypt=False):
+
+        self.uploads.append(bucket_name+"/"+key)
 
 
 with description('Dhis2') as self:
@@ -111,3 +128,22 @@ with description('Dhis2') as self:
         pd.testing.assert_frame_equal(
             df,
             expected_df)
+
+    with it("Dhis2Dumper.dumps"):
+        sqls = {
+            "\nSELECT datavalue.value,\norganisationunit.path,\nperiod.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency,\ndataelement.uid AS dataelementid, dataelement.name AS dataelementname,\ncategoryoptioncombo.uid AS CatComboID , categoryoptioncombo.name AS CatComboName,\ndataelement.created,\norganisationunit.uid as uidorgunit\nFROM datavalue\nJOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid\nJOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid\nJOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid\nJOIN period ON period.periodid = datavalue.periodid\nJOIN periodtype ON periodtype.periodtypeid = period.periodtypeid\nWHERE ( dataelement.uid='s4CxsmoqdRj') OR ( dataelement.uid='fSD1ZZo4hTs' AND categoryoptioncombo.uid='HllvX50cXC0');":
+            {
+                "file": "datavalues",
+                "parse_dates": ['start_date', 'end_date'],
+            }
+        }
+        pg_hook = MockHook.with_extra_sqls(sqls)
+        mock_s3 = MockS3Hook()
+
+        config = Descriptor.load("./specs/fixtures/config/dump")
+        dumper = Dhis2Dumper(config, mock_s3, "bucket", pg_hook=pg_hook)
+        dumper.dump_to_s3()
+        expect(mock_s3.uploads).to(equal(
+            ['bucket/export/play/extract_data_values_play_pills-raw.csv',
+             'bucket/export/play/extract_data_values_play_pills'
+             ]))

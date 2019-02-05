@@ -2,6 +2,7 @@
 
 import pandas as pd
 import psycopg2 as pypg
+from datetime import datetime
 
 from .periods import Periods
 from .levels import Levels
@@ -155,10 +156,15 @@ JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourcei
 JOIN period ON period.periodid = datavalue.periodid
 JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid
 WHERE """+de_ids_condition+";"
-        # print(sql)
+        print(sql)
+
+        print("get_data > start", datetime.now())
         df = self.hook.get_pandas_df(sql)
+        print("get_data > executed", datetime.now())
         df = Periods.add_period_columns(df)
+        print("get_data > periods", datetime.now())
         df = Levels.add_uid_levels_columns_from_path_column(df)
+        print("get_data > levels", datetime.now())
 
         return df
 

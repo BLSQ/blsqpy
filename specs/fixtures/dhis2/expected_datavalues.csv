@@ -1,10 +1,10 @@
-value,enddate,dataelementid,dataelementname,catcomboid,catcomboname,created,uidorgunit,monthly,quarterly,uidlevel2
-19,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,ADlqHWi5XoF,201810,2018Q4,S9nVJLlzYrK
-5,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,t9VpBZzQrua,201810,2018Q4,S9nVJLlzYrK
-101,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,rIm8scqHjTU,201810,2018Q4,S9nVJLlzYrK
-22,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,iHtSpT60CMh,201810,2018Q4,S9nVJLlzYrK
-92,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,Lfne3gUweGX,201810,2018Q4,S9nVJLlzYrK
-111,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,cIRdW9GbtLK,201810,2018Q4,S9nVJLlzYrK
-82,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,p9PuADSaGYv,201810,2018Q4,S9nVJLlzYrK
-121,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,vLGvLhBwNHh,201810,2018Q4,S9nVJLlzYrK
-102,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,G93DKvb6AoO,201810,2018Q4,S9nVJLlzYrK
+value,enddate,dataelementid,dataelementname,catcomboid,catcomboname,created,uidorgunit,monthly,quarterly,uidlevel2,uidlevel3
+19,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,ADlqHWi5XoF,201810,2018Q4,S9nVJLlzYrK,C45N74moRRQ
+5,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,t9VpBZzQrua,201810,2018Q4,S9nVJLlzYrK,pEapXtA3gsp
+101,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,rIm8scqHjTU,201810,2018Q4,S9nVJLlzYrK,wtfYrXHHiL5
+22,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,iHtSpT60CMh,201810,2018Q4,S9nVJLlzYrK,C45N74moRRQ
+92,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,Lfne3gUweGX,201810,2018Q4,S9nVJLlzYrK,wtfYrXHHiL5
+111,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,cIRdW9GbtLK,201810,2018Q4,S9nVJLlzYrK,wtfYrXHHiL5
+82,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,p9PuADSaGYv,201810,2018Q4,S9nVJLlzYrK,wtfYrXHHiL5
+121,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,vLGvLhBwNHh,201810,2018Q4,S9nVJLlzYrK,wtfYrXHHiL5
+102,2018-10-31,s4CxsmoqdRj,Pilules,oFtySBIkit2,Active,2014-04-25 13:35:32.182,G93DKvb6AoO,201810,2018Q4,S9nVJLlzYrK,wtfYrXHHiL5

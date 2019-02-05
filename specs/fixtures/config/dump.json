@@ -1,0 +1,31 @@
+{
+  "settings":{
+    "dhis2_connection_id": "play"
+  },
+  "activities": {
+    "pills": {
+      "name": "Pilule",
+      "states": {
+        "active": {
+          "sources": {
+            "moh": {
+              "uids": ["s4CxsmoqdRj"]
+            }
+          }
+        },
+        "delivered": {
+          "sources": {
+            "moh": {
+              "uids": ["fSD1ZZo4hTs.HllvX50cXC0"],
+              "comments": [
+                "Pilules : Microgynon distribuée",
+                "Pilules : Autres distribuée",
+                "Pilules : Microlut distribuée"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
