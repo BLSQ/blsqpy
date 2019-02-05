@@ -1,0 +1,1041 @@
+{
+    "settings": {
+        "dhis2_connection_id": "dhis"
+    },
+    "activities": {
+        "hiv_analysis": {
+            "name": "HIV treatment lines summary",
+            "states": {
+                "data_nvp_200_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "c2cqb8QtJ1S"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "azt_3tc_efv": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "ppV5TCX4Nd4"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "uIvFJy1ZSMC"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_300_mg_30_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "XFwCquySY0I"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_3tc_150_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "F1odQwWvLlM"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "abc_3tc_efv": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "vPLs3m92srh"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "lttU7PiCAqg"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lpv_r_100_25_mg_ces_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "XgCWDfRv5Rq"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_efv_600_mg_30_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "lYuAeFMju4R"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "azt_3tc_nvp": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "wrRjiD0fz8j"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "hHahC0WTLlX"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_300_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "cKmRQv2XGs6"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_3tc_300_150_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "k3yh51eXltE"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_3tc_300_300_mg_30_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "uJwJ6MNvPDf"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_3tc_300_300_mg_30_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "TduLijG7QLO"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_300_150_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "Pg1NN5I7afb"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_nvp_200_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "NPlgyBSw8uu"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_nvp_300_150_200_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "d7bv8JQg5MM"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "abc_3tc_lpv_r": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "pnmoOGpFyIa"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "prnCi6GwYzL"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_3tc_300_150_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "PHWsepgB5t1"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_3tc_60_30_mg_disp_60ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "mZ4Xxqlyovd"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "tdf_ftc_lpv_rt": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "yOCXFpdC8pm"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lpv_r_80_20_mg_ml_solution_orale_fl_60_ml_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "Ef1j9aizOQx"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_ftc_300_200_mg_30_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "vfBVUBSpqyO"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_300_mg_30_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "RHG92O0jpbG"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_nvp_60_30_50_mg_ces_disp_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "Iiw7a7JBshL"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_3tc_150_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "kJB5oI2nBuN"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "autres_a_preciser": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "sQz9CgzwqVH"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "X2nhX2N5B0B"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_3tc_10_mg_ml_solution_orale_fl_240_ml_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "R6YWian9QTi"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lpv_r_80_20_mg_ml_solution_orale_fl_60_ml_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "LoQMve1V1l8"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_3tc_60_30_mg_disp_60ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "ouXrR8dJByP"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_nvp_60_30_50_mg_ces_disp_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "jt5sDQ4CqWQ"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lpv_r_200_50_mg_12o_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "opaSTvEyLaW"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "tdf_3tc_efv": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "iOW0K3mjoxe"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "fdc1v0PSUZe"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_efv_600_mg_30_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "g7JxNzgGVEo"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_nvp_300_150_200_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "XCTlZSrQueT"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "tdf_ftc_efv": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "UghM3Ucwecy"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "pidcOIMv6Er"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lvp_r_133_33_mg_120_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "C8sKB4jQhF9"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "azt_3tc_lpv_r": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "CEWPwSNogdU"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "WTfY6gHxkKe"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_3tc_efv_300_300_600_mg_30_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "HiERwOmAgjz"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lpv_r_100_25_mg_ces_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "Z1Jz4BLyhwa"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_300_150_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "Y7sG2cnO6V9"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_60_mg_disp_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "SPbj5ZEpF8F"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_nvp_50_mg_ces_pour_solution_orale_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "IIhBVdKSRhK"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_nvp_50_mg_ces_pour_solution_orale_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "v9hr0FNP5ZV"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "abc_3tc_nvp": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "LgElMKG231h"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "X6ROVclhfqF"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_3tc_10_mg_ml_solution_orale_fl_240_ml_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "JtizQc3ItvD"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_300_mg_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "qHppnoWi4M4"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "tdf_ftc_nvp": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "VH5BEHHJFIs"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "fiEARR6fRnJ"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lvp_r_133_33_mg_120_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "LcnTFQ7pIX0"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "tdf_3tc_nvp": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "lqA1LfMt9C6"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "Q71tylkcq2P"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_ftc_300_200_mg_30_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "lcQMOUBuDc5"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_60_30_mg_ces_disp_60ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "gCGaBeegAxW"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_tdf_3tc_efv_300_300_600_mg_30_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "hGCNPoGVKVN"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_300_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "IwiJuJrDzjL"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_lpv_r_200_50_mg_12o_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "WkeeJ5BzjCR"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_60_mg_disp_60_ces_consommation_moyenne_ajustee": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "ZHUuHX5VAkr"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_abc_300_mg_60_ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "mvsxvsk4fTQ"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "data_azt_3tc_60_30_mg_ces_disp_60ces_stockout": {
+                    "sources": {
+                        "blsq": {
+                            "uids": [
+                                "aqvnaPyYDoY"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "blsq",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                },
+                "tdf_3tc_lpv_r": {
+                    "sources": {
+                        "cordaid": {
+                            "uids": [
+                                "MelhgtoRH9R"
+                            ]
+                        },
+                        "pnls": {
+                            "uids": [
+                                "wLBRFksBtou"
+                            ]
+                        }
+                    },
+                    "reconcile_options": {
+                        "comments": [
+                            ""
+                        ],
+                        "preferred_source": "cordaid",
+                        "data_type": "flux",
+                        "impute": {}
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,559 @@
+{
+  "settings": { "dhis2_connection_id": "dhis" },
+  "activities": {
+    "hiv_analysis": {
+      "name": "HIV treatment lines summary",
+      "states": {
+        "ABC + 3TC + EFV": {
+          "sources": {
+            "cordaid": { "uids": ["vPLs3m92srh"] },
+            "pnls": { "uids": ["lttU7PiCAqg"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "ABC + 3TC + LPV/r": {
+          "sources": {
+            "cordaid": { "uids": ["pnmoOGpFyIa"] },
+            "pnls": { "uids": ["prnCi6GwYzL"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "ABC + 3TC + NVP": {
+          "sources": {
+            "cordaid": { "uids": ["LgElMKG231h"] },
+            "pnls": { "uids": ["X6ROVclhfqF"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Autres (\u00e0 pr\u00e9ciser)": {
+          "sources": {
+            "cordaid": { "uids": ["sQz9CgzwqVH"] },
+            "pnls": { "uids": ["X2nhX2N5B0B"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "AZT + 3TC + LPV/r": {
+          "sources": {
+            "cordaid": { "uids": ["CEWPwSNogdU"] },
+            "pnls": { "uids": ["WTfY6gHxkKe"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "AZT+3TC+ EFV": {
+          "sources": {
+            "cordaid": { "uids": ["ppV5TCX4Nd4"] },
+            "pnls": { "uids": ["uIvFJy1ZSMC"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "AZT+3TC+NVP": {
+          "sources": {
+            "cordaid": { "uids": ["wrRjiD0fz8j"] },
+            "pnls": { "uids": ["hHahC0WTLlX"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "TDF + 3TC + LPV/r": {
+          "sources": {
+            "cordaid": { "uids": ["MelhgtoRH9R"] },
+            "pnls": { "uids": ["wLBRFksBtou"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "TDF + FTC + NVP": {
+          "sources": {
+            "cordaid": { "uids": ["VH5BEHHJFIs"] },
+            "pnls": { "uids": ["fiEARR6fRnJ"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "TDF+ FTC + EFV": {
+          "sources": {
+            "cordaid": { "uids": ["UghM3Ucwecy"] },
+            "pnls": { "uids": ["pidcOIMv6Er"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "TDF+3TC+EFV": {
+          "sources": {
+            "cordaid": { "uids": ["iOW0K3mjoxe"] },
+            "pnls": { "uids": ["fdc1v0PSUZe"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "TDF+3TC+NVP": {
+          "sources": {
+            "cordaid": { "uids": ["lqA1LfMt9C6"] },
+            "pnls": { "uids": ["Q71tylkcq2P"] }
+          },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "TDF+FTC+LPV+rt": {
+          "sources": { "cordaid": { "uids": ["yOCXFpdC8pm"] } },
+          "reconcile_options": {
+            "preferred_source": "cordaid",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-3TC 10 mg/ml solution orale - Fl. 240 ml-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["R6YWian9QTi"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-3TC 150 mg - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["kJB5oI2nBuN"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC 300 mg - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["qHppnoWi4M4"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC/3TC ( 300/150 mg) - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["PHWsepgB5t1"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC /3TC 60/30 mg disp. - 60ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["ouXrR8dJByP"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC 60 mg disp - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["ZHUuHX5VAkr"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT 300 mg - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["cKmRQv2XGs6"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC (300/150 mg) - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["Pg1NN5I7afb"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC 60/30 mg ces disp - 60ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["gCGaBeegAxW"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC/NVP (300/150/200 mg) - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["XCTlZSrQueT"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC/NVP 60/30/50 mg ces disp - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["jt5sDQ4CqWQ"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-EFV 600 mg - 30 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["lYuAeFMju4R"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LPV/r 100/25 mg ces - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["Z1Jz4BLyhwa"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LPV/r 80/20 mg/ml solution orale - Fl. 60 ml-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["Ef1j9aizOQx"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LVP/r (133/33 mg) - 120 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["C8sKB4jQhF9"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-NVP 200 mg - 60 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["NPlgyBSw8uu"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF 300 mg - 30 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["RHG92O0jpbG"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF/3TC (300/300 mg) - 30 CES-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["TduLijG7QLO"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF/3TC/EFV (300/300/600 mg) - 30 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["HiERwOmAgjz"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LPV/r (200/50 mg) - 12O ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["WkeeJ5BzjCR"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF/FTC (300/200 mg) - 30 ces-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["lcQMOUBuDc5"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-NVP 50 mg ces pour solution orale - 60 C\u00e9s-Consommation moyenne ajust\u00e9e": {
+          "sources": { "blsq": { "uids": ["v9hr0FNP5ZV"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LPV/r 80/20 mg/ml solution orale - Fl. 60 ml-Stockout": {
+          "sources": { "blsq": { "uids": ["LoQMve1V1l8"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-3TC 10 mg/ml solution orale - Fl. 240 ml-Stockout": {
+          "sources": { "blsq": { "uids": ["JtizQc3ItvD"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-3TC 150 mg - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["F1odQwWvLlM"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF/FTC (300/200 mg) - 30 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["vfBVUBSpqyO"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF/3TC/EFV (300/300/600 mg) - 30 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["hGCNPoGVKVN"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF/3TC (300/300 mg) - 30 CES-Stockout": {
+          "sources": { "blsq": { "uids": ["uJwJ6MNvPDf"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-TDF 300 mg - 30 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["XFwCquySY0I"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-NVP 50 mg ces pour solution orale - 60 C\u00e9s-Stockout": {
+          "sources": { "blsq": { "uids": ["IIhBVdKSRhK"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-NVP 200 mg - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["c2cqb8QtJ1S"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LVP/r (133/33 mg) - 120 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["LcnTFQ7pIX0"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LPV/r 100/25 mg ces - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["XgCWDfRv5Rq"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-LPV/r (200/50 mg) - 12O ces-Stockout": {
+          "sources": { "blsq": { "uids": ["opaSTvEyLaW"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-EFV 600 mg - 30 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["g7JxNzgGVEo"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC/NVP 60/30/50 mg ces disp - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["Iiw7a7JBshL"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC/NVP (300/150/200 mg) - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["d7bv8JQg5MM"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC 60/30 mg ces disp - 60ces-Stockout": {
+          "sources": { "blsq": { "uids": ["aqvnaPyYDoY"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT/3TC (300/150 mg) - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["Y7sG2cnO6V9"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-AZT 300 mg - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["IwiJuJrDzjL"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC/3TC ( 300/150 mg) - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["k3yh51eXltE"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC 60 mg disp - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["SPbj5ZEpF8F"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC 300 mg - 60 ces-Stockout": {
+          "sources": { "blsq": { "uids": ["mvsxvsk4fTQ"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        },
+        "Data-ABC /3TC 60/30 mg disp. - 60ces-Stockout": {
+          "sources": { "blsq": { "uids": ["mZ4Xxqlyovd"] } },
+          "reconcile_options": {
+            "preferred_source": "blsq",
+            "data_type": "flux",
+            "impute": {},
+            "comments": [""]
+          }
+        }
+      }
+    }
+  }
+}
