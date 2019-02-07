@@ -6,11 +6,10 @@ from blsqpy.descriptor import Descriptor
 from blsqpy.dhis2_dumper import Dhis2Dumper
 
 init_sql_to_df = {
-    "SELECT organisationunitid, uid, name, path FROM organisationunit;": {"file": "organisationunit"},
     "SELECT uid, name, dataelementid, categorycomboid FROM dataelement;": {"file": "dataelements"},
     "SELECT uid, name, dataelementgroupid FROM dataelementgroup;": {"file": "dataelementgroups"},
     "SELECT dataelementid, dataelementgroupid FROM dataelementgroupmembers;": {"file": "dataelementgroupmembers"},
-    "SELECT uid as organisationunituid, path from organisationunit;": {"file": "orgunits"},
+    "SELECT uid as organisationunituid, path, name as organisationunitname from organisationunit;": {"file": "orgunits"},
     "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;": {"file": "categoryoptioncombos"},
     "SELECT *  FROM categorycombos_optioncombos;": {"file": "cocs"},
 }
@@ -22,7 +21,6 @@ class MockHook:
         self.sqls_to_dfs = sqls_to_dfs
         self.conn_name_attr = "mock_conn"
         self.mock_conn = "mock_connection"
-        # print(self.sqls_to_dfs)
 
     def get_pandas_df(self, sql):
         csv = self.sqls_to_dfs[sql]
@@ -146,4 +144,15 @@ with description('Dhis2') as self:
         expect(mock_s3.uploads).to(equal(
             ['bucket/export/play/extract_data_values_play_pills-raw.csv',
              'bucket/export/play/extract_data_values_play_pills'
+             ]))
+
+    with it("Dhis2Dumper.dumps"):
+        pg_hook = MockHook.with_extra_sqls({})
+        mock_s3 = MockS3Hook()
+
+        config = Descriptor.load("./specs/fixtures/config/dump")
+        dumper = Dhis2Dumper(config, mock_s3, "bucket", pg_hook=pg_hook)
+        dumper.dump_organisation_units_structure()
+        expect(mock_s3.uploads).to(equal(
+            ['bucket/export/play/organisation_units_structure.csv',
              ]))

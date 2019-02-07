@@ -5,6 +5,7 @@ from blsqpy.postgres_hook import PostgresHook
 from blsqpy.descriptor import Descriptor
 import os
 
+
 class Dhis2Dumper(object):
 
     def __init__(self, config, s3_hook, bucket, pg_hook=None):
@@ -22,6 +23,23 @@ class Dhis2Dumper(object):
             'index': False,
             "compression": 'gzip'
         }
+
+    def dump_organisation_units_structure(self):
+        conn_id = self.config.settings.dhis2_connection_id
+        task_id = 'export/'+conn_id+'/organisation_units_structure.csv'
+
+        csv_path = task_id
+
+        pandas_df = self.dhis.organisation_units_structure()
+        local_file = "./"+csv_path
+        directory = './export/'+conn_id
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        pandas_df.to_csv(local_file, **self.csv_params)
+
+        self.s3_hook.load_file(
+            local_file, task_id, self.bucket, replace=True)
 
     def dump_to_s3(self):
         for activity_code, activity in Descriptor.as_items(self.config.activities):

@@ -42,7 +42,7 @@ class Dhis2(object):
         # replace resources sql "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;")
         # by sql on orgunit and computation
         self.orgunitstructure = Levels.add_uid_levels_columns_from_path_column(
-            hook.get_pandas_df("SELECT uid as organisationunituid, path from organisationunit;"),
+            hook.get_pandas_df("SELECT uid as organisationunituid, path, name as organisationunitname from organisationunit;"),
             start=1, end_offset=2, with_level=True
         )
         self.categoryoptioncombo = hook.get_pandas_df(
