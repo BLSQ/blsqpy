@@ -21,10 +21,8 @@ class MockHook:
         self.sqls_to_dfs = sqls_to_dfs
         self.conn_name_attr = "mock_conn"
         self.mock_conn = "mock_connection"
-        # print(self.sqls_to_dfs)
 
     def get_pandas_df(self, sql):
-        print(self.sqls_to_dfs.keys())
         csv = self.sqls_to_dfs[sql]
         #print(sql, csv)
 
