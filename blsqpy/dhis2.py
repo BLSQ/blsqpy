@@ -82,7 +82,8 @@ class Dhis2(object):
             str(aggregation_level) +
             ", count(datavalue) values_count",
             "FROM datavalue ",
-            "JOIN "+orgunitstructure_table+ " ON "+orgunitstructure_table+ ".organisationunitid = datavalue.sourceid ",
+            "join organisationunit ON organisationunit.organisationunitid = datavalue.sourceid ",
+            "JOIN "+orgunitstructure_table+ " ON "+orgunitstructure_table+ ".organisationunituid = organisationunit.uid ",
             "JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid ",
             "JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid ",
             "JOIN period ON period.periodid = datavalue.periodid ",
