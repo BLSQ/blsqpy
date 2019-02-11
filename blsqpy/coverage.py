@@ -1,17 +1,19 @@
 
 class Coverage:
 
-    def __init__(self, dhis, facility_level=5, aggregation_level=3):
+    def __init__(self, dhis, facility_level=5, aggregation_level=3, orgunitstructure_table= "_orgunitstructure"):
         self.facility_level = facility_level
         self.aggregation_level = aggregation_level
         self.dhis = dhis
         self.aggregation_level_uid_column = 'uidlevel' + \
             str(self.aggregation_level)
+        self.orgunitstructure_table = orgunitstructure_table
 
     def for_data_elements(self, data_element_uids):
         df = self.dhis.get_reported_de(
             aggregation_level=self.aggregation_level,
-            data_element_uids=data_element_uids
+            data_element_uids=data_element_uids,
+            orgunitstructure_table=self.orgunitstructure_table
         )
         facility_level_count_column = 'level_count'
 

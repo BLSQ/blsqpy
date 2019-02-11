@@ -16,7 +16,7 @@ class MockDhis:
     def get_data_set_data_elements(self, datasetid):
         return pd.read_csv("./specs/fixtures/coverage/get_data_set_data_elements_"+datasetid+".csv")
 
-    def get_reported_de(self, data_element_uids=None, aggregation_level=None):
+    def get_reported_de(self, data_element_uids=None, aggregation_level=None, orgunitstructure_table= "_orgunitstructure"):
         return pd.read_csv("./specs/fixtures/coverage/reported_de_"+("-".join(data_element_uids))+"-"+str(aggregation_level)+".csv")
 
     def organisation_units_structure(self):
