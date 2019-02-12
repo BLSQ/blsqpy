@@ -1,6 +1,7 @@
 import os
 from contextlib import closing
 from urllib.parse import urlparse
+from sqlalchemy import create_engine
 
 import psycopg2
 import psycopg2.extensions
@@ -33,8 +34,16 @@ class PostgresHook(object):
             self.connection = props
 
     def get_pandas_df(self, sql, parameters={"chunksize": 1000}):
+        print("**** sql\n"+sql)
         with closing(self.get_conn()) as conn:
-            return psql.read_sql(sql, con=conn, params=parameters)
+            result= psql.read_sql(sql, con=conn, params=parameters)
+        print("** sql done")
+        return result
 
     def get_conn(self):
         return psycopg2.connect(**self.connection)
+
+    def get_sqlalchemy_engine(self):
+        url = "postgresql://"+self.connection['user']+":"+self.connection['password']+"@"+self.connection['host']+":5432/"+self.connection['database']
+        dw = create_engine(url)
+        return dw

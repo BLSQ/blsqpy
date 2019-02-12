@@ -6,7 +6,7 @@ from datetime import datetime
 
 from .periods import Periods
 from .levels import Levels
-
+from io import StringIO
 
 class Dhis2(object):
     """Information and metadata about a given DHIS instance.
@@ -64,7 +64,11 @@ class Dhis2(object):
             self.categoryoptioncombo, on='categoryoptioncomboid', suffixes=['_de', '_cc'])
         return de_catecombos_options_full
 
-    def get_reported_de(self, aggregation_level=3, data_element_uids=None):
+    def create_blsq_orgunits(self):        
+        self.to_pg_table(self.orgunitstructure, "blsq_orgunitstructure")
+
+    def get_reported_de(self, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
+        
         # TODO : allow tailored reported values extraction
         """Get the amount of data reported for each data elements, aggregated at Level 3 level."""
         data_elements = " , ".join(
@@ -72,18 +76,21 @@ class Dhis2(object):
         data_element_selector = "select dataelement.dataelementid from dataelement where dataelement.uid in (" + \
             data_elements+")"
         sql = [
-            "SELECT period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency , dataelement.uid as deid, categoryoptioncombo.uid as coc_id , _orgunitstructure.uidlevel" +
+            "SELECT period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency"+
+            " , dataelement.uid as deid, categoryoptioncombo.uid as coc_id ,"+
+            " "+orgunitstructure_table+ ".uidlevel" +
             str(aggregation_level) +
             ", count(datavalue) values_count",
             "FROM datavalue ",
-            "JOIN _orgunitstructure ON _orgunitstructure.organisationunitid = datavalue.sourceid ",
+            "join organisationunit ON organisationunit.organisationunitid = datavalue.sourceid ",
+            "JOIN "+orgunitstructure_table+ " ON "+orgunitstructure_table+ ".organisationunituid = organisationunit.uid ",
             "JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid ",
             "JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid ",
             "JOIN period ON period.periodid = datavalue.periodid ",
             "JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid",
             "WHERE datavalue.dataelementid in (" +
             data_element_selector + " )",
-            "GROUP BY _orgunitstructure.uidlevel" +
+            "GROUP BY "+orgunitstructure_table+ ".uidlevel" +
             str(aggregation_level) +
             ", period.startdate, period.enddate, periodtype.name, dataelement.uid, categoryoptioncombo.uid;"
         ]
@@ -211,3 +218,29 @@ WHERE """+de_ids_condition+";"
         df = self.hook.get_pandas_df(sql)
         df["de.coc"] = df.de_uid.str.cat(df.coc_uid, '.')
         return df
+
+    def to_pg_table(self, df, table_name):
+        print("connection")
+        con = self.hook.get_sqlalchemy_engine() 
+        print("connection acquired")
+        data = StringIO()
+        df.to_csv(data, header=False, index=False)
+        data.seek(0)
+        print("data to stringio done")
+        raw = con.raw_connection()
+        raw.autocommit = False
+        print("raw connection")
+        curs = raw.cursor()
+        print("cursor")
+        curs.execute("DROP TABLE IF EXISTS " + table_name)
+        curs.close()
+        raw.commit()
+        print(table_name+" dropped")
+        df.to_sql(table_name,  index=False, con=con, if_exists='append', chunksize=100)
+        #empty_table = pd.io.sql.get_schema(df, table_name, con = con)
+        #empty_table = empty_table.replace('"', '')
+        #curs.execute(empty_table)
+        #print(table_name+" created with "+empty_table)
+        #curs.copy_from(data, table_name, sep = ',')
+        #curs.connection.commit()
+        return self.hook.get_pandas_df("select * from "+table_name)
