@@ -1,7 +1,9 @@
 import os
+
+
 class Coverage:
 
-    def __init__(self, dhis, facility_level=5, aggregation_level=3, orgunitstructure_table="_orgunitstructure", s3ExportsHook=None, conn_id=None):
+    def __init__(self, dhis, facility_level=5, aggregation_level=3, orgunitstructure_table="_orgunitstructure", s3ExportsHook=None, conn_id=None, bucket=None):
         self.facility_level = facility_level
         self.aggregation_level = aggregation_level
         self.dhis = dhis
@@ -10,6 +12,7 @@ class Coverage:
         self.orgunitstructure_table = orgunitstructure_table
         self.s3ExportsHook = s3ExportsHook
         self.conn_id = conn_id
+        self.bucket = bucket
 
     def for_data_elements(self, data_element_uids):
         df = self.dhis.get_reported_de(
@@ -69,7 +72,7 @@ class Coverage:
                 dataset["data_set_count"]
             name = '-'.join(data_element_sliced_uids)
             conn_id = self.conn_id
-            local_file = conn_id+'/coverage_'+conn_id+'_'+name
+            local_file = 'coverage_'+conn_id+'_'+name
             directory = './export/'+conn_id
             if not os.path.exists(directory):
                 os.makedirs(directory)
@@ -79,7 +82,7 @@ class Coverage:
 
             if self.s3ExportsHook:
                 self.s3ExportsHook.load_file(
-                    local_file,
+                    directory+"/"+local_file,
                     'export/'+conn_id+"/"+local_file+".csv",
                     self.bucket,
                     replace=True)
