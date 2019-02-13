@@ -72,7 +72,7 @@ class Coverage:
                 dataset["data_set_count"]
             name = '-'.join(data_element_sliced_uids)
             conn_id = self.conn_id
-            local_file = 'coverage_'+conn_id+'_'+name
+            local_file = 'coverage_'+conn_id+'_'+dataset_id+"_"+name
             directory = './export/'+conn_id
             if not os.path.exists(directory):
                 os.makedirs(directory)
