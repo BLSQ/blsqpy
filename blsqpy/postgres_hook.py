@@ -1,4 +1,6 @@
 import os
+import time
+from datetime import datetime
 from contextlib import closing
 from urllib.parse import urlparse
 from sqlalchemy import create_engine
@@ -34,10 +36,13 @@ class PostgresHook(object):
             self.connection = props
 
     def get_pandas_df(self, sql, parameters={"chunksize": 1000}):
-        print("**** sql\n"+sql)
+        start_time = time.time()
+        print("**** sql start ",datetime.now(),"\n" , sql)
         with closing(self.get_conn()) as conn:
             result= psql.read_sql(sql, con=conn, params=parameters)
-        print("** sql done")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print("** sql done ", datetime.now(), " - %.3f" % (elapsed_time), "seconds, returned",len(result), "records")
         return result
 
     def get_conn(self):

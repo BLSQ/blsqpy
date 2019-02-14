@@ -6,6 +6,8 @@ from datetime import datetime
 
 from .periods import Periods
 from .levels import Levels
+from .query import get_query
+
 from io import StringIO
 
 class Dhis2(object):
@@ -64,11 +66,21 @@ class Dhis2(object):
             self.categoryoptioncombo, on='categoryoptioncomboid', suffixes=['_de', '_cc'])
         return de_catecombos_options_full
 
-    def create_blsq_orgunits(self):        
+    def create_blsq_orgunits(self):
         self.to_pg_table(self.orgunitstructure, "blsq_orgunitstructure")
 
+    def get_coverage_de(self, data_element_uid, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
+        return self.hook.get_pandas_df(get_query("coverage_for_de", {
+            'data_element_uid': data_element_uid,
+            'orgunitstructure_table': orgunitstructure_table,
+            'aggregation_level': aggregation_level
+        }))
+
+    def get_coverage_dataset(self, dataset_uid, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
+        return ""
+
     def get_reported_de(self, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
-        
+
         # TODO : allow tailored reported values extraction
         """Get the amount of data reported for each data elements, aggregated at Level 3 level."""
         data_elements = " , ".join(
@@ -221,7 +233,7 @@ WHERE """+de_ids_condition+";"
 
     def to_pg_table(self, df, table_name):
         print("connection")
-        con = self.hook.get_sqlalchemy_engine() 
+        con = self.hook.get_sqlalchemy_engine()
         print("connection acquired")
         data = StringIO()
         df.to_csv(data, header=False, index=False)
