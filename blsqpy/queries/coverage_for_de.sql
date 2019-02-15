@@ -29,8 +29,7 @@ with orgunit_values as (
     dataelement_uid,
     period.startdate as period_start,
     period.enddate as period_end,
-    lower(periodtype.name)
-    orgunit_has_values.period_id,
+    lower(periodtype.name),
     count(*) as orgunit_count
   FROM orgunit_has_values
   JOIN {{orgunitstructure_table}} on {{orgunitstructure_table}}.organisationunituid = orgunit_has_values.organisationunit_uid
