@@ -16,8 +16,7 @@ with orgunit_values as (
      select dataelement.uid from dataelement
      join datasetelement ON datasetelement.dataelementid = dataelement.dataelementid
      join dataset ON dataset.datasetid = datasetelement.datasetid
-     where dataset.uid = '{{dataset_uid}})'
-
+     where dataset.uid = '{{dataset_uid}}')
 ), orgunit_has_values as (
   select
     organisationunit_uid,
@@ -31,15 +30,17 @@ with orgunit_values as (
     uidlevel{{aggregation_level}},
     period.startdate as period_start,
     period.enddate as period_end,
-    orgunit_has_values.period_id,
+    lower(periodtype.name) ,
     count(*)
   from orgunit_has_values
   join {{orgunitstructure_table}} on {{orgunitstructure_table}}.organisationunituid = orgunit_has_values.organisationunit_uid
   join period ON period.periodid = orgunit_has_values.period_id
+  join periodtype ON periodtype.periodtypeid = period.periodtypeid
   group by
     uidlevel{{aggregation_level}},
     period_start,
     period_end,
+    periodtype.name,
     orgunit_has_values.period_id
 )
 select * from ds_coverage

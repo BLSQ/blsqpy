@@ -10,6 +10,7 @@ from .query import get_query
 
 from io import StringIO
 
+
 class Dhis2(object):
     """Information and metadata about a given DHIS instance.
 
@@ -44,7 +45,8 @@ class Dhis2(object):
         # replace resources sql "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;")
         # by sql on orgunit and computation
         self.orgunitstructure = Levels.add_uid_levels_columns_from_path_column(
-            hook.get_pandas_df("SELECT uid as organisationunituid, path, name as organisationunitname from organisationunit;"),
+            hook.get_pandas_df(
+                "SELECT uid as organisationunituid, path, name as organisationunitname from organisationunit;"),
             start=1, end_offset=2, with_level=True
         )
         self.categoryoptioncombo = hook.get_pandas_df(
@@ -69,17 +71,21 @@ class Dhis2(object):
     def create_blsq_orgunits(self):
         self.to_pg_table(self.orgunitstructure, "blsq_orgunitstructure")
 
-    def get_coverage_de(self, data_element_uid, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
+    def get_coverage_de(self, data_element_uid, aggregation_level=3, orgunitstructure_table="blsq_orgunitstructure"):
         return self.hook.get_pandas_df(get_query("coverage_for_de", {
             'data_element_uid': data_element_uid,
             'orgunitstructure_table': orgunitstructure_table,
             'aggregation_level': aggregation_level
         }))
 
-    def get_coverage_dataset(self, dataset_uid, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
-        return ""
+    def get_coverage_dataset(self, dataset_uid, aggregation_level=3, orgunitstructure_table="blsq_orgunitstructure"):
+        return self.hook.get_pandas_df(get_query("coverage_for_dataset", {
+            'dataset_uid': dataset_uid,
+            'orgunitstructure_table': orgunitstructure_table,
+            'aggregation_level': aggregation_level
+        }))
 
-    def get_reported_de(self, aggregation_level=3, data_element_uids=None, orgunitstructure_table= "blsq_orgunitstructure"):
+    def get_coverage_de_coc(self, aggregation_level=3, data_element_uids=None, orgunitstructure_table="blsq_orgunitstructure"):
 
         # TODO : allow tailored reported values extraction
         """Get the amount of data reported for each data elements, aggregated at Level 3 level."""
@@ -87,27 +93,13 @@ class Dhis2(object):
             list(map(lambda x: "'"+x+"'", data_element_uids)))
         data_element_selector = "select dataelement.dataelementid from dataelement where dataelement.uid in (" + \
             data_elements+")"
-        sql = [
-            "SELECT period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency"+
-            " , dataelement.uid as deid, categoryoptioncombo.uid as coc_id ,"+
-            " "+orgunitstructure_table+ ".uidlevel" +
-            str(aggregation_level) +
-            ", count(datavalue) values_count",
-            "FROM datavalue ",
-            "join organisationunit ON organisationunit.organisationunitid = datavalue.sourceid ",
-            "JOIN "+orgunitstructure_table+ " ON "+orgunitstructure_table+ ".organisationunituid = organisationunit.uid ",
-            "JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid ",
-            "JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid ",
-            "JOIN period ON period.periodid = datavalue.periodid ",
-            "JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid",
-            "WHERE datavalue.dataelementid in (" +
-            data_element_selector + " )",
-            "GROUP BY "+orgunitstructure_table+ ".uidlevel" +
-            str(aggregation_level) +
-            ", period.startdate, period.enddate, periodtype.name, dataelement.uid, categoryoptioncombo.uid;"
-        ]
-        sql = " \n ".join(map(lambda s: s+" ", sql))
-        print(sql)
+
+        sql = get_query("coverage_for_de_coc", {
+            'data_element_selector': data_element_selector,
+            'orgunitstructure_table': orgunitstructure_table,
+            'aggregation_level': aggregation_level
+        })
+
         reported_de = self.hook.get_pandas_df(sql)
         reported_de = Periods.add_period_columns(reported_de)
         return reported_de
@@ -158,25 +150,9 @@ class Dhis2(object):
 
         de_ids_condition = " OR ".join(list(map(to_sql_condition, de_ids)))
 
-        # print(de_ids_condition)
-
-        sql = """
-SELECT datavalue.value,
-organisationunit.path,
-period.startdate as start_date, period.enddate as end_date, lower(periodtype.name) as frequency,
-dataelement.uid AS dataelementid, dataelement.name AS dataelementname,
-categoryoptioncombo.uid AS CatComboID , categoryoptioncombo.name AS CatComboName,
-dataelement.created,
-organisationunit.uid as uidorgunit
-FROM datavalue
-JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
-JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
-JOIN organisationunit ON organisationunit.organisationunitid = datavalue.sourceid
-JOIN period ON period.periodid = datavalue.periodid
-JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid
-WHERE """+de_ids_condition+";"
-        print(sql)
-
+        sql = get_query("extract_data", {
+            'de_ids_conditions': de_ids_condition,
+        })
         print("get_data > start", datetime.now())
         df = self.hook.get_pandas_df(sql)
         print("get_data > executed", datetime.now())
@@ -248,11 +224,7 @@ WHERE """+de_ids_condition+";"
         curs.close()
         raw.commit()
         print(table_name+" dropped")
-        df.to_sql(table_name,  index=False, con=con, if_exists='append', chunksize=100)
-        #empty_table = pd.io.sql.get_schema(df, table_name, con = con)
-        #empty_table = empty_table.replace('"', '')
-        #curs.execute(empty_table)
-        #print(table_name+" created with "+empty_table)
-        #curs.copy_from(data, table_name, sep = ',')
-        #curs.connection.commit()
+        df.to_sql(table_name,  index=False, con=con,
+                  if_exists='append', chunksize=100)
+        raw.close()
         return self.hook.get_pandas_df("select * from "+table_name)
