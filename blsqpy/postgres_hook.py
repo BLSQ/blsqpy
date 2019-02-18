@@ -35,7 +35,7 @@ class PostgresHook(object):
         else:
             self.connection = props
 
-    def get_pandas_df(self, sql, parameters={"chunksize": 1000}):
+    def get_pandas_df(self, sql, parameters=None):
         start_time = time.time()
         print("**** sql start ",datetime.now(),"\n" , sql)
         with closing(self.get_conn()) as conn:

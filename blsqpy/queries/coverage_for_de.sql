@@ -12,7 +12,14 @@ with orgunit_values as (
   JOIN dataelement ON dataelement.dataelementid = datavalue.dataelementid
   JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = datavalue.categoryoptioncomboid
   WHERE
+   organisationunit.path like '{{org_unit_path_starts_with}}%' and
    dataelement.uid= '{{ data_element_uid }}'
+   {% if period_start %}
+    and period.startdate >= '{{period_start}}'
+   {% endif %}
+   {% if period_end %}
+    and period.enddate <= '{{period_end}}'
+   {% endif %}
 ), orgunit_has_values as (
   SELECT
     organisationunit_uid,
@@ -29,8 +36,8 @@ with orgunit_values as (
     dataelement_uid,
     period.startdate as period_start,
     period.enddate as period_end,
-    lower(periodtype.name),
-    count(*) as orgunit_count
+    lower(periodtype.name) as frequency,
+    count(*) as values_count
   FROM orgunit_has_values
   JOIN {{orgunitstructure_table}} on {{orgunitstructure_table}}.organisationunituid = orgunit_has_values.organisationunit_uid
   JOIN period ON period.periodid = orgunit_has_values.period_id

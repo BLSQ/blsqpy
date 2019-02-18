@@ -71,21 +71,36 @@ class Dhis2(object):
     def create_blsq_orgunits(self):
         self.to_pg_table(self.orgunitstructure, "blsq_orgunitstructure")
 
-    def get_coverage_de(self, data_element_uid, aggregation_level=3, orgunitstructure_table="blsq_orgunitstructure"):
+    def get_coverage_de(self, data_element_uid, aggregation_level=3,
+                        orgunitstructure_table="blsq_orgunitstructure",
+                        org_unit_path_starts_with="/",
+                        period_start=None, period_end=None):
         return self.hook.get_pandas_df(get_query("coverage_for_de", {
             'data_element_uid': data_element_uid,
             'orgunitstructure_table': orgunitstructure_table,
-            'aggregation_level': aggregation_level
+            'aggregation_level': aggregation_level,
+            'org_unit_path_starts_with': org_unit_path_starts_with,
+            'period_start': period_start,
+            'period_end': period_end
         }))
 
-    def get_coverage_dataset(self, dataset_uid, aggregation_level=3, orgunitstructure_table="blsq_orgunitstructure"):
+    def get_coverage_dataset(self, dataset_uid, aggregation_level=3,
+                             orgunitstructure_table="blsq_orgunitstructure",
+                             org_unit_path_starts_with="/",
+                             period_start=None, period_end=None):
         return self.hook.get_pandas_df(get_query("coverage_for_dataset", {
             'dataset_uid': dataset_uid,
             'orgunitstructure_table': orgunitstructure_table,
-            'aggregation_level': aggregation_level
+            'aggregation_level': aggregation_level,
+            'org_unit_path_starts_with': org_unit_path_starts_with,
+            'period_start': period_start,
+            'period_end': period_end
         }))
 
-    def get_coverage_de_coc(self, aggregation_level=3, data_element_uids=None, orgunitstructure_table="blsq_orgunitstructure"):
+    def get_coverage_de_coc(self, aggregation_level=3, data_element_uids=None,
+                            orgunitstructure_table="blsq_orgunitstructure",
+                            org_unit_path_starts_with="/",
+                            period_start=None, period_end=None):
 
         # TODO : allow tailored reported values extraction
         """Get the amount of data reported for each data elements, aggregated at Level 3 level."""
@@ -97,7 +112,10 @@ class Dhis2(object):
         sql = get_query("coverage_for_de_coc", {
             'data_element_selector': data_element_selector,
             'orgunitstructure_table': orgunitstructure_table,
-            'aggregation_level': aggregation_level
+            'aggregation_level': aggregation_level,
+            'org_unit_path_starts_with': org_unit_path_starts_with,
+            'period_start': period_start,
+            'period_end': period_end
         })
 
         reported_de = self.hook.get_pandas_df(sql)
@@ -134,7 +152,7 @@ class Dhis2(object):
         data_set_des_df = self.hook.get_pandas_df(sql)
         return data_set_des_df
 
-    def get_data(self, de_ids):
+    def get_data(self, de_ids, org_unit_path_starts_with="/", period_start=None, period_end=None):
         # TODO : allow tailored reported values extraction
         """Extract data reported for each data elements."""
         print("fetching data values from",
@@ -152,6 +170,9 @@ class Dhis2(object):
 
         sql = get_query("extract_data", {
             'de_ids_conditions': de_ids_condition,
+            'org_unit_path_starts_with': org_unit_path_starts_with,
+            'period_start': period_start,
+            'period_end': period_end
         })
         print("get_data > start", datetime.now())
         df = self.hook.get_pandas_df(sql)
