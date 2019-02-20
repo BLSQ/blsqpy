@@ -21,7 +21,7 @@ class Levels:
             return Levels.to_level_uid(x[0], select_level)
 
       if with_level:
-        df["level"] = df.path.apply(lambda x: len(x.split('/')) - 1)
+        df["level"] = df.path.apply(lambda x: x.count('/') - 1)
 
       for level in range(start, max_level + end_offset):
             df["uidlevel"+str(level)] = df[['path']

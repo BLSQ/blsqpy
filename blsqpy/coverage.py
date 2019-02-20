@@ -15,7 +15,7 @@ class Coverage:
         self.bucket = bucket
 
     def for_data_elements(self, data_element_uids):
-        df = self.dhis.get_reported_de(
+        df = self.dhis.get_coverage_de_coc(
             aggregation_level=self.aggregation_level,
             data_element_uids=data_element_uids,
             orgunitstructure_table=self.orgunitstructure_table
@@ -34,7 +34,6 @@ class Coverage:
     def for_data_set_organisation_units(self, dataset_id):
         data_set_organisation_units = self.dhis.get_data_set_organisation_units(
             dataset_id)
-        print(data_set_organisation_units)
         # exclude keep only orgunit with level x and group by
         facility_level_column = "uidlevel"+str(self.facility_level)
         data_set_orgunits = data_set_organisation_units.query(facility_level_column+" == "+facility_level_column).groupby(

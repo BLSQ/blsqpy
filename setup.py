@@ -20,7 +20,7 @@ setup(
     url="https://github.com/BLSQ/blsq-py",
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
-       "scipy", "pandas", "boto3", "python-dotenv", "psycopg2-binary", "sqlalchemy"
+       "scipy", "pandas", "boto3", "python-dotenv", "psycopg2-binary", "sqlalchemy", "jinja2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
