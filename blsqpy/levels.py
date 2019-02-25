@@ -23,9 +23,23 @@ class Levels:
       if with_level:
         df["level"] = df.path.apply(lambda x: x.count('/') - 1)
 
+      names_available = 'organisationunitname'  in df.columns
+      names_by_uid = {}
+      
+      if(names_available):
+        for index, row in df.iterrows():
+          names_by_uid[row['organisationunituid']] =row['organisationunitname']
+
+      def to_level_name(x):
+        if(x[0]):
+          return names_by_uid[x[0]]      
+
       for level in range(start, max_level + end_offset):
-            df["uidlevel"+str(level)] = df[['path']
+        df["uidlevel"+str(level)] = df[['path']
                                            ].apply(partial(to_level, level), axis=1)
+        if(names_available):                                   
+          df["namelevel"+str(level)] = df[["uidlevel"+str(level)]
+                                           ].apply(to_level_name, axis=1)
 
       df.drop(["path"], axis=1, inplace=True)
       return df

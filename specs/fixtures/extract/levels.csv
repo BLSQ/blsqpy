@@ -1,5 +1,10 @@
-uidlevel2,uidlevel3
-b,f
-b,c
-z,
-c,g
+organisationunituid,organisationunitname,level,uidlevel1,namelevel1,uidlevel2,namelevel2,uidlevel3,namelevel3,uidlevel4,namelevel4,uidlevel5,namelevel5,uidlevel6,namelevel6
+a,Name a,0,a,Name a,,,,,,,,,,
+b,Name b,0,b,Name b,,,,,,,,,,
+f,Name f ,2,a,Name a,b,Name b,f,Name f ,,,,,,
+c,Name c,2,a,Name a,b,Name b,c,Name c,,,,,,
+d,Name d ,3,a,Name a,b,Name b,c,Name c,d,Name d ,,,,
+e,Name e,4,a,Name a,b,Name b,c,Name c,d,Name d ,e,Name e,,
+z,Name z ,1,a,Name a,z,Name z ,,,,,,,,
+c,Name c,1,a,Name a,c,Name c,,,,,,,,
+g,Name g,2,a,Name a,c,Name c,g,Name g,,,,,,

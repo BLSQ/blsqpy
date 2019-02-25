@@ -1,2 +1,4 @@
-uid,path
-uid,country1/region1/fosa1
+organisationunituid,path,organisationunitname
+fosa1,country1/region1/fosa1,fosaname
+region1,country1/region1,regionname
+country1,country1,countryname
