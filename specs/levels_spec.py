@@ -40,13 +40,13 @@ with description('levels') as self:
         expect_level(["/a/b", "/a/b/c/d/e", "/a", "/a/c"], 5)
 
     with it("add_uid_levels_columns_from_path_column"):
-        df = pd.DataFrame(data=["/a/b/f", "/a/b/c/d/e", "/a/z", "/a/c/g"],
-                          index=range(0, 4),
-                          columns=['path'])
-        df = Levels.add_uid_levels_columns_from_path_column(df)
+        df = pd.read_csv("./specs/fixtures/levels/raw.csv", sep=',')
+
+        print(df)
+        df = Levels.add_uid_levels_columns_from_path_column(df, start=1, end_offset=2, with_level=True)
 
         print("add_uid_levels_columns_from_path_column",df)
-        # df.to_csv("./specs/extract/levels.csv")
+        # df.to_csv("./specs/fixtures/extract/levels.csv", index = False)
         expected_levels = pd.read_csv("./specs/fixtures/extract/levels.csv", sep=',')
         print(expected_levels)
         pd.testing.assert_frame_equal(
