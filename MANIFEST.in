@@ -1,1 +1,1 @@
-recursive-include blsqpy *.py *.txt
+recursive-include blsqpy *.py *.txt *.sql
