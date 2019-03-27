@@ -19,6 +19,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/BLSQ/blsq-py",
     packages=find_packages(exclude=('tests', 'docs')),
+    package_data={
+      'queries': ['blsqpy/queries/*.sql'],
+   },
+    include_package_data=True,
     install_requires=[
        "scipy", "pandas", "boto3", "python-dotenv", "psycopg2-binary", "sqlalchemy", "jinja2", "requests"
     ],
