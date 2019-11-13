@@ -69,3 +69,5 @@ ax = world[world.continent == 'Africa'].plot(
     color='white', edgecolor='black')
 gdf.plot(ax=ax, color='red')
 plt.show()
+
+print(client.organisation_units_structure())

@@ -7,21 +7,22 @@ from .levels import Levels
 class Dhis2Client(object):
     def __init__(self, baseurl):
         self.baseurl = baseurl
+        self.session = requests.Session()
 
-
-    def get(self, path, params = None):
+    def get(self, path, params=None):
         url = self.baseurl+"/api/"+path
-        print(url)
-        resp = requests.get(url, params=params).json()
-        return resp
+        resp = self.session.get(url, params=params)
+        print(resp.request.path_url)
+        return resp.json()
 
     def organisation_units_structure(self):
         orgunits = []
         fields = ["id", "name", "path", "contactPerson", "memberCount",
                   "featureType", "coordinates", "closedDate", "phoneNumber", "memberCount"]
-        url = self.baseurl+"/api/organisationUnits?fields="+(",".join(fields))+"&paging=false"
-        print(url)
-        resp = requests.get(url).json()
+        resp = self.get("organisationUnits",
+                        {"fields": ",".join(fields),
+                         "paging": "false"
+                         })
         for record in resp["organisationUnits"]:
             line = []
             for field in fields:
