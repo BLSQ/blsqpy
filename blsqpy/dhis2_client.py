@@ -8,6 +8,13 @@ class Dhis2Client(object):
     def __init__(self, baseurl):
         self.baseurl = baseurl
 
+
+    def get(self, path, params = None):
+        url = self.baseurl+"/api/"+path
+        print(url)
+        resp = requests.get(url, params=params).json()
+        return resp
+
     def organisation_units_structure(self):
         orgunits = []
         fields = ["id", "name", "path", "contactPerson", "memberCount",
