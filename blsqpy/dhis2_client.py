@@ -39,6 +39,6 @@ class Dhis2Client(object):
 
         Levels.add_uid_levels_columns_from_path_column(
             orgunits_df,
-            start=1, end_offset=2, with_level=True
+            start=1, end_offset=1, with_level=True
         )
         return orgunits_df
