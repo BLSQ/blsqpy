@@ -1,7 +1,10 @@
 
 import requests
 import pandas as pd
+import geopandas
 from .levels import Levels
+from .geometry import geometrify
+
 
 
 class Dhis2Client(object):
@@ -42,3 +45,21 @@ class Dhis2Client(object):
             start=1, end_offset=1, with_level=True
         )
         return orgunits_df
+
+    def get_geodataframe(self):
+        orgunits = self.get("organisationUnits",
+                      {
+                          "fields": "id,name,featureType,coordinates,level",
+                          "filter": [
+                              "featureType:!eq:POINT",
+                              "level:eq:3"
+                          ]
+                      }
+                      )["organisationUnits"]
+
+        geometrify(orgunits)
+
+        df = pd.DataFrame(orgunits)
+
+        gdf = geopandas.GeoDataFrame(df)
+        return gdf
