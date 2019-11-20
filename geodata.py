@@ -25,7 +25,7 @@ gdf=client.get_geodataframe(geometry_type="shape")
 world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 ax = world[world.continent == 'Africa'].plot(
     color='white', edgecolor='black')
-gdf.plot(ax=ax, color='red')
+gdf.plot(ax=ax, cmap='OrRd')
 plt.show()
 
 df = client.organisation_units_structure()

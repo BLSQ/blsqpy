@@ -63,7 +63,8 @@ class Dhis2Client(object):
         orgunits = self.get("organisationUnits",
                             {
                                 "fields": "id,name,featureType,coordinates,level",
-                                "filter": "".join(filters)
+                                "filter": "".join(filters),
+                                "paging":"false"
                             }
                             )["organisationUnits"]
 
