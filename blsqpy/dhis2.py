@@ -1,8 +1,10 @@
 """Read a DHIS database and prepare its content for analysis."""
 
 import pandas as pd
+import geopandas 
 import psycopg2 as pypg
 from datetime import datetime
+from .geometry import geometrify_df 
 
 from .periods import Periods
 from .levels import Levels
@@ -249,3 +251,19 @@ class Dhis2(object):
                   if_exists='append', chunksize=100)
         raw.close()
         return self.hook.get_pandas_df("select * from "+table_name)
+
+    def get_geodataframe(self,geometry_type=None):
+        sql="SELECT uid as organisationunituid, path, coordinates, name as organisationunitname from organisationunit"
+        if geometry_type == "point":
+            sql=sql+" WHERE coordinates LIKE '[%' and coordinates NOT LIKE '[[%' "
+        elif geometry_type=="shape":
+            sql=sql+" WHERE coordinates LIKE '[[%' "
+        elif geometry_type==None:
+            pass
+        else:
+            raise Exception("unsupported geometry type")
+        df = self.hook.get_pandas_df(sql)
+        geometrify_df(df)
+        print(df)
+        gdf = geopandas.GeoDataFrame(df)
+        return gdf

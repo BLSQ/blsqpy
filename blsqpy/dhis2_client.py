@@ -7,14 +7,12 @@ from .geometry import geometrify
 from .dot import Dot
 
 
-
 class Dhis2Client(object):
     def __init__(self, baseurl):
         if baseurl.startswith('http'):
             self.baseurl = baseurl
         else:
-            #print(Dot.load_env(baseurl))
-            self.baseurl= Dot.load_env(baseurl)["url"]
+            self.baseurl = Dot.load_env(baseurl)["url"]
         self.session = requests.Session()
 
     def get(self, path, params=None):
@@ -51,16 +49,23 @@ class Dhis2Client(object):
         )
         return orgunits_df
 
-    def get_geodataframe(self):
+    def get_geodataframe(self, geometry_type=None):
+        filters = []
+        if geometry_type == "point":
+            filters.extend("featureType:eq:POINT")
+        elif geometry_type == "shape":
+            filters.extend("featureType:in:[POLYGON,MULTI_POLYGON]")
+        elif geometry_type == None:
+            pass
+        else:
+            raise Exception("unsupported geometry type")
+
         orgunits = self.get("organisationUnits",
-                      {
-                          "fields": "id,name,featureType,coordinates,level",
-                          "filter": [
-                              "featureType:!eq:POINT",
-                              "level:eq:3"
-                          ]
-                      }
-                      )["organisationUnits"]
+                            {
+                                "fields": "id,name,featureType,coordinates,level",
+                                "filter": "".join(filters)
+                            }
+                            )["organisationUnits"]
 
         geometrify(orgunits)
 

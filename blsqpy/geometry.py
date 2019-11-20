@@ -1,7 +1,9 @@
-from shapely.geometry import LineString, Polygon, MultiPolygon, Point, shape
+from shapely.geometry import LineString, Point, shape
 import json
 
 def as_geometry(coordinates):
+    if coordinates == None:
+        return None
     x = json.loads(coordinates)
     if coordinates.startswith("[[[["):
         geojson = {"type": "MultiPolygon", "coordinates": x}
@@ -20,3 +22,5 @@ def geometrify(orgunits):
         if "coordinates" in orgunit:
             orgunit["geometry"] = as_geometry(orgunit["coordinates"])
 
+def geometrify_df(df):
+    df["geometry"]= df.apply(lambda row: as_geometry(row["coordinates"]),axis=1)
