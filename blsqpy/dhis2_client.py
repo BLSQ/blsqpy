@@ -4,12 +4,17 @@ import pandas as pd
 import geopandas
 from .levels import Levels
 from .geometry import geometrify
+from .dot import Dot
 
 
 
 class Dhis2Client(object):
     def __init__(self, baseurl):
-        self.baseurl = baseurl
+        if baseurl.startswith('http'):
+            self.baseurl = baseurl
+        else:
+            #print(Dot.load_env(baseurl))
+            self.baseurl= Dot.load_env(baseurl)["url"]
         self.session = requests.Session()
 
     def get(self, path, params=None):

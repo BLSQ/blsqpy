@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import json
 from blsqpy.dhis2_client import Dhis2Client
 from blsqpy.geometry import geometrify
-client = Dhis2Client("https://admin:district@play.dhis2.org/2.30")
+#client = Dhis2Client("https://admin:district@play.dhis2.org/2.30")
+
+client = Dhis2Client("play-2.30.txt")
 
 gdf=client.get_geodataframe()
 
