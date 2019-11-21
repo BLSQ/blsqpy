@@ -48,7 +48,7 @@ class Dhis2(object):
         # by sql on orgunit and computation
         self.orgunitstructure = Levels.add_uid_levels_columns_from_path_column(
             hook.get_pandas_df(
-                "SELECT uid as organisationunituid, path, name as organisationunitname from organisationunit;"),
+                "SELECT uid as organisationunituid, path, name as organisationunitname, contactPerson, closedDate, phoneNumber from organisationunit;"),
             start=1, end_offset=2, with_level=True
         )
         self.categoryoptioncombo = hook.get_pandas_df(
@@ -253,7 +253,7 @@ class Dhis2(object):
         return self.hook.get_pandas_df("select * from "+table_name)
 
     def get_geodataframe(self,geometry_type=None):
-        sql="SELECT uid as organisationunituid, path, coordinates, name as organisationunitname from organisationunit"
+        sql="SELECT uid as id, path, coordinates, name as organisationunitname from organisationunit"
         if geometry_type == "point":
             sql=sql+" WHERE coordinates LIKE '[%' and coordinates NOT LIKE '[[%' "
         elif geometry_type=="shape":
@@ -263,6 +263,7 @@ class Dhis2(object):
         else:
             raise Exception("unsupported geometry type")
         df = self.hook.get_pandas_df(sql)
+        df["level"] = df.path.apply(lambda x: x.count('/') - 1)
         geometrify_df(df)
         print(df)
         gdf = geopandas.GeoDataFrame(df)
