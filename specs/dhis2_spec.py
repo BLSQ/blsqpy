@@ -9,7 +9,7 @@ init_sql_to_df = {
     "SELECT uid, name, dataelementid, categorycomboid FROM dataelement;": {"file": "dataelements"},
     "SELECT uid, name, dataelementgroupid FROM dataelementgroup;": {"file": "dataelementgroups"},
     "SELECT dataelementid, dataelementgroupid FROM dataelementgroupmembers;": {"file": "dataelementgroupmembers"},
-    "SELECT uid as organisationunituid, path, name as organisationunitname from organisationunit;": {"file": "orgunits"},
+    "SELECT uid as organisationunituid, path, name as organisationunitname, contactPerson, closedDate, phoneNumber from organisationunit;": {"file": "orgunits"},
     "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;": {"file": "categoryoptioncombos"},
     "SELECT *  FROM categorycombos_optioncombos;": {"file": "cocs"},
 }
