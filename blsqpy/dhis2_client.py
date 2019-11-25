@@ -59,14 +59,13 @@ class Dhis2Client(object):
             pass
         else:
             raise Exception("unsupported geometry type")
-
-        orgunits = self.get("organisationUnits",
-                            {
-                                "fields": "id,name,coordinates,level,path",
-                                "filter": "".join(filters),
-                                "paging":"false"
-                            }
-                            )["organisationUnits"]
+        params = {
+            "fields": "id,name,coordinates,geometry,level,path",
+            "paging": "false"
+        }
+        if len(filters) > 0:
+            params["filter"] = "".join(filters),
+        orgunits = self.get("organisationUnits", params)["organisationUnits"]
 
         geometrify(orgunits)
 

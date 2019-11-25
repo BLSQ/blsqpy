@@ -4,4 +4,6 @@ python setup.py develop
 pip install mamba
 pip install twisted
 pip install expects
+# https://github.com/getsentry/responses
+pip install responses
 
