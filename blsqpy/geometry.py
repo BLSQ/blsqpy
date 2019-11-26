@@ -14,7 +14,13 @@ def as_geometry(coordinates):
     if coordinates.startswith("[["):
         return LineString(x)
     if coordinates.startswith("["):
-        return Point(float(x[0]), float(x[1]))
+        try:
+            return Point(float(x[0]), float(x[1]))
+        except ValueError as err:
+            print("WARN couldn't parse coordinates", coordinates, err)
+            return None
+    
+        
 
 
 def geometrify(orgunits):
