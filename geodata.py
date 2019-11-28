@@ -6,7 +6,13 @@ from blsqpy.dhis2_client import Dhis2Client
 from blsqpy.geometry import geometrify
 from blsqpy.dhis2 import Dhis2
 from blsqpy.postgres_hook import PostgresHook
-client1 = Dhis2Client("https://admin:district@play.dhis2.org/2.30")
+client1 = Dhis2Client("https://admin:district@play.dhis2.org/2.32.3")
+df=client1.data_element_structure()
+print( df)
+b = True
+if b:
+  exit() 
+
 #client2 = Dhis2Client("play-2.30.txt") 
 client2=Dhis2(PostgresHook("cr_replica.txt"))
 
