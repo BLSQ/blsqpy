@@ -85,17 +85,17 @@ class Dhis2Client(object):
 
     # print(gdf)
 
-    def data_element_structure(self):
-        # https://play.dhis2.org/2.32.3/api/dataElements.json?fields=id,name,shortname,valueType,domainType,aggregationType,categoryCombo[id,name,categoryOptionCombos[id,name]]&paging=false
+    def data_elements_structure(self):
+        # https://play.dhis2.org/2.32.3/api/dataElements.json?fields=id,name,shortname,valueType,domainType,aggregationType,categoryCombo[id,name,code,categoryOptionCombos[id,name,code]]&paging=false
         dataelements = []
         elementFields = ["id", "name", "shortName",
                          "valueType", "domainType", "code", "aggregationType"]
         elements = ",".join(
-            elementFields)+",categoryCombo[id,name,categoryOptionCombos[id,name]]"
+            elementFields)+",categoryCombo[id,name,code,categoryOptionCombos[id,name,code]]"
 
         resp = self.get("dataElements", {
                         "fields": elements, "paging": "false"})
-  
+
         for dataelement in resp["dataElements"]:
 
             categorycombo = dataelement["categoryCombo"]
@@ -106,23 +106,39 @@ class Dhis2Client(object):
                     if field in dataelement:
                         line.append(dataelement[field])
                     else:
+                        # eg code is optional
                         line.append(None)
 
                 line.extend([
                     categorycombo["id"],
                     categorycombo["name"],
+                    categorycombo.get("code"),
                     categoryoptioncombo["id"],
-                    categoryoptioncombo["name"]
+                    categoryoptioncombo["name"],
+                    categoryoptioncombo.get("code")
                 ])
                 dataelements.append(line)
+                
         df = pd.DataFrame(dataelements)
 
-        elementFields.extend([
-                    "categorycomboid",
-                    "categorycomboname",
-                    "categoryoptioncomboid",
-                    "categoryoptioncomboname"
-                ])
-        df.columns = elementFields
+        columns = []
+        for field in elementFields:
+            if field == "id":
+                columns.append("de_uid")
+            else:
+                columns.append("de_"+field)
+
+        columns.extend([
+            "cc_uid",
+            "cc_name",
+            "cc_code",
+            "coc_uid",
+            "coc_name",
+            "coc_code"
+        ])
+
+        columns = [x.lower() for x in columns]
+        df.columns = columns
+        df["de.coc"] = df.de_uid.str.cat(df.coc_uid, '.')
 
         return df

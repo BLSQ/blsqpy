@@ -7,8 +7,11 @@ from blsqpy.geometry import geometrify
 from blsqpy.dhis2 import Dhis2
 from blsqpy.postgres_hook import PostgresHook
 client1 = Dhis2Client("https://admin:district@play.dhis2.org/2.32.3")
-df=client1.data_element_structure()
-print( df)
+df=client1.data_elements_structure()
+client2=Dhis2(PostgresHook("cr_replica.txt"))
+df2=client2.data_elements_structure()
+print( df.columns)
+print( df2.columns)
 b = True
 if b:
   exit() 

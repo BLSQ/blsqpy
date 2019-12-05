@@ -139,18 +139,18 @@ with description('Dhis2Client#organisation_units_structure') as self:
         df = test_for_organisation_units_structure()
         print(df)
 
-
+@responses.activate
 def test_for_data_element_structure():
     client = Dhis2Client("https://admin:district@play.dhis2.org/2.32.3")
-    return client.data_element_structure()
+    return client.data_elements_structure()
 
 
 with description('Dhis2Client#data_element_structure') as self:
     with it('fetch these columns'):
-
-        responses.add(responses.GET, "https://play.dhis2.org/2.32.3/api/dataElements.json?fields=id,name,shortName,valueType,domainType,code,aggregationType,categoryCombo[id,name,categoryOptionCombos[id,name]]&paging=false",
+                                     
+        responses.add(responses.GET, "https://admin:district@play.dhis2.org/2.32.3/api/dataElements?fields=id%2Cname%2CshortName%2CvalueType%2CdomainType%2Ccode%2CaggregationType%2CcategoryCombo%5Bid%2Cname%2Ccode%2CcategoryOptionCombos%5Bid%2Cname%2Ccode%5D%5D&paging=false",
                       json={
-                          'organisationUnits': [
+                          'dataElements': [
                               {
                                   "code": "DE_1148614",
                                   "name": "Accute Flaccid Paralysis (Deaths < 5 yrs)",
@@ -162,10 +162,12 @@ with description('Dhis2Client#data_element_structure') as self:
                                   "categoryCombo": {
                                       "name": "default",
                                       "id": "bjDvmb4bfuf",
+                                      "code":"default",
                                       "categoryOptionCombos": [
                                           {
                                               "name": "default",
-                                              "id": "HllvX50cXC0"
+                                              "id": "HllvX50cXC0",
+                                              "code":"default"
                                           }
                                       ]
                                   }
@@ -233,7 +235,6 @@ with description('Dhis2Client#data_element_structure') as self:
                                   }
                               },
                               {
-                                  "code": "DE_358943",
                                   "name": "Acute Flaccid Paralysis (AFP) referrals",
                                   "id": "M62VHgYT2n0",
                                   "shortName": "AFP referrals",
@@ -259,4 +260,9 @@ with description('Dhis2Client#data_element_structure') as self:
                       }, status=200)
 
         df = test_for_data_element_structure()
-        print(df)
+        df.to_csv("./specs/fixtures/dhis2_client/test_data_element.csv",index=False)
+        
+        expected_df = pd.read_csv("./specs/fixtures/dhis2_client/expected_dataelement.csv")
+        pd.testing.assert_frame_equal(df, expected_df, check_index_type=False, check_dtype=False)
+        
+        
