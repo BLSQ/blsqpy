@@ -1,5 +1,5 @@
 import os
-
+from .query import QueryTools
 
 class Coverage:
 
@@ -13,6 +13,37 @@ class Coverage:
         self.s3ExportsHook = s3ExportsHook
         self.conn_id = conn_id
         self.bucket = bucket
+        
+    def get_organisationLevel_labels(self):
+        level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
+        return pd.Series(level_Labels.name,index=level_Labels.level).to_dict()
+    
+    
+    def timeliness_for_data_elements(self, de_ids, aggregation_level=3,
+                             orgunitstructure_table="blsq_orgunitstructure",
+                             org_unit_path_starts_with="/",
+                             averaged=False,
+                             period_start=None, period_end=None):
+        
+        organisationLevel_dict=self.get_organisationLevel_labels()
+        tree_depth=len(organisationLevel_dict)
+        
+        def orgtree_sql_pruning(label=False):
+            return ','.join(['_orgunitstructure.uidlevel'+str(x)+' AS '+str(organisationLevel_dict[x])
+                                 if label else '_orgunitstructure.uidlevel'+str(x) for
+                              x in range(aggregation_level,tree_depth+1)])
+    
+        
+        "
+        return self.hook.get_pandas_df(get_query("timeliness_for_de", {
+            'averaged':averaged,
+            'ou_labeling':orgtree_sql_pruning(label=True) ,
+            'ou_structure': orgtree_sql_pruning,
+            'de_ids_conditions': QueryTools.de_ids_condition_formatting(de_ids),
+            'period_start': period_start,
+            'period_end': period_end
+        }))
+
 
     def for_data_elements(self, data_element_uids):
         df = self.dhis.get_coverage_de_coc(

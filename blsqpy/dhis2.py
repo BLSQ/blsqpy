@@ -8,7 +8,7 @@ from .geometry import geometrify_df
 
 from .periods import Periods
 from .levels import Levels
-from .query import get_query
+from .query import get_query,QueryTools
 
 from io import StringIO
 
@@ -168,7 +168,7 @@ class Dhis2(object):
                 return "( dataelement.uid='{0}' AND categoryoptioncombo.uid='{1}')".format(de_id, category_id)
             return "( dataelement.uid='{0}')".format(de_id)
 
-        de_ids_condition = " OR ".join(list(map(to_sql_condition, de_ids)))
+        de_ids_condition = QueryTools.de_ids_condition_formatting(de_ids)
 
         sql = get_query("extract_data", {
             'de_ids_conditions': de_ids_condition,
@@ -206,6 +206,8 @@ class Dhis2(object):
 
     def organisation_units_structure(self):
         return self.orgunitstructure
+    
+
 
     def data_elements_structure(self):
         def cleanup_name(column, alias):

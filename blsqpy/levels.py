@@ -21,7 +21,7 @@ class Levels:
             return Levels.to_level_uid(x[0], select_level)
 
       if with_level:
-        df["level"] = df.path.apply(lambda x: x.count('/') - 1)
+        df["level"] = df.path.apply(lambda x: x.count('/'))
 
       names_available = 'organisationunitname'  in df.columns
       names_by_uid = {}
