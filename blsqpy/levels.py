@@ -16,7 +16,7 @@ class Levels:
     @staticmethod
     def add_uid_levels_columns_from_path_column(df, start = 2, end_offset= -1, with_level= False):
       max_level = Levels.max_level(df)
-
+      
       def to_level(select_level, x):
             return Levels.to_level_uid(x[0], select_level)
 
@@ -31,7 +31,7 @@ class Levels:
           names_by_uid[row['organisationunituid']] =row['organisationunitname']
 
       def to_level_name(x):
-        if(x[0]):
+        if(x[0] and x[0] in names_by_uid):
           return names_by_uid[x[0]]      
 
       for level in range(start, max_level + end_offset):

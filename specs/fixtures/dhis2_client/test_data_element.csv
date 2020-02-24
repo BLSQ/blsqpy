@@ -1,0 +1,12 @@
+de_uid,de_name,de_shortname,de_valuetype,de_domaintype,de_code,de_aggregationtype,cc_uid,cc_name,cc_code,coc_uid,coc_name,coc_code,de.coc
+FTRrcoaog83,Accute Flaccid Paralysis (Deaths < 5 yrs),Accute Flaccid Paral (Deaths < 5 yrs),NUMBER,AGGREGATE,DE_1148614,SUM,bjDvmb4bfuf,default,default,HllvX50cXC0,default,default,FTRrcoaog83.HllvX50cXC0
+P3jJH5Tu5VC,Acute Flaccid Paralysis (AFP) follow-up,AFP follow-up,NUMBER,AGGREGATE,DE_359049,SUM,t3aNCvHsoSn,Morbidity Cases,,wHBMVthqIX4,12-59m,,P3jJH5Tu5VC.wHBMVthqIX4
+P3jJH5Tu5VC,Acute Flaccid Paralysis (AFP) follow-up,AFP follow-up,NUMBER,AGGREGATE,DE_359049,SUM,t3aNCvHsoSn,Morbidity Cases,,SdOUI2yT46H,5-14y,,P3jJH5Tu5VC.SdOUI2yT46H
+P3jJH5Tu5VC,Acute Flaccid Paralysis (AFP) follow-up,AFP follow-up,NUMBER,AGGREGATE,DE_359049,SUM,t3aNCvHsoSn,Morbidity Cases,,S34ULMcHMca,0-11m,,P3jJH5Tu5VC.S34ULMcHMca
+P3jJH5Tu5VC,Acute Flaccid Paralysis (AFP) follow-up,AFP follow-up,NUMBER,AGGREGATE,DE_359049,SUM,t3aNCvHsoSn,Morbidity Cases,,jOkIbJVhECg,15y+,,P3jJH5Tu5VC.jOkIbJVhECg
+FQ2o8UBlcrS,Acute Flaccid Paralysis (AFP) new,AFP new,NUMBER,AGGREGATE,DE_388,SUM,t3aNCvHsoSn,Morbidity Cases,,wHBMVthqIX4,12-59m,,FQ2o8UBlcrS.wHBMVthqIX4
+FQ2o8UBlcrS,Acute Flaccid Paralysis (AFP) new,AFP new,NUMBER,AGGREGATE,DE_388,SUM,t3aNCvHsoSn,Morbidity Cases,,SdOUI2yT46H,5-14y,,FQ2o8UBlcrS.SdOUI2yT46H
+FQ2o8UBlcrS,Acute Flaccid Paralysis (AFP) new,AFP new,NUMBER,AGGREGATE,DE_388,SUM,t3aNCvHsoSn,Morbidity Cases,,S34ULMcHMca,0-11m,,FQ2o8UBlcrS.S34ULMcHMca
+FQ2o8UBlcrS,Acute Flaccid Paralysis (AFP) new,AFP new,NUMBER,AGGREGATE,DE_388,SUM,t3aNCvHsoSn,Morbidity Cases,,jOkIbJVhECg,15y+,,FQ2o8UBlcrS.jOkIbJVhECg
+M62VHgYT2n0,Acute Flaccid Paralysis (AFP) referrals,AFP referrals,NUMBER,AGGREGATE,,SUM,ck7mRNwGDjP,Morbidity Referrals,,o2gxEt6Ek2C,0-4y,,M62VHgYT2n0.o2gxEt6Ek2C
+M62VHgYT2n0,Acute Flaccid Paralysis (AFP) referrals,AFP referrals,NUMBER,AGGREGATE,,SUM,ck7mRNwGDjP,Morbidity Referrals,,ba1FkzknqS8,5y+,,M62VHgYT2n0.ba1FkzknqS8

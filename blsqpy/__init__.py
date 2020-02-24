@@ -1,6 +1,7 @@
 from . import query
 from . import descriptor
 from . import dot
+from . import geometry
 from . import dhis2
 from . import periods
 from . import levels
