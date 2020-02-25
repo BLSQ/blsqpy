@@ -42,7 +42,7 @@ class Coverage:
         organisationLevel_dict=self.get_organisationLevel_labels()
         tree_depth=len(organisationLevel_dict)
         
-        return self.hook.get_pandas_df(get_query("timeliness_for_de", {
+        return self.hook.get_pandas_df(get_query("timeliness_for_ds", {
             'averaged':averaged,
             'ou_labeling':QueryTools.orgtree_sql_pruning(label=True,organisationLevel_dict,tree_depth) ,
             'ou_structure': QueryTools.orgtree_sql_pruning(label=False,organisationLevel_dict,tree_depth),
