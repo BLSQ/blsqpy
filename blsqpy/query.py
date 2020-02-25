@@ -10,7 +10,7 @@ def get_query(query_name, params):
 
 class QueryTools:
     @staticmethod
-    def to_sql_condition(de):
+    def de_to_sql_condition(de):
         splitted = de.split(".")
         de_id = splitted[0]
         if len(splitted) > 1:
@@ -19,5 +19,18 @@ class QueryTools:
         return "( dataelement.uid='{0}')".format(de_id)
 
     @staticmethod
+    def dataset_to_sql_condition(dataset_id):
+        return "( dataset.uid='{0}')".format(dataset_id)
+
+    @staticmethod
     def de_ids_condition_formatting(de_ids):
-        return " OR ".join(list(map(QueryTools.to_sql_condition, de_ids)))
+        return " OR ".join(list(map(QueryTools.de_to_sql_condition, de_ids)))
+    @staticmethod
+    def dataset_ids_condition_formatting(dataset_ids):
+        return " OR ".join(list(map(QueryTools.dataset_to_sql_condition, dataset_ids)))
+    
+    @staticmethod
+    def orgtree_sql_pruning(label=False,organisationLevel_dict,tree_depth):
+            return ','.join(['_orgunitstructure.uidlevel'+str(x)+' AS '+str(organisationLevel_dict[x])
+                                 if label else '_orgunitstructure.uidlevel'+str(x) for
+                              x in range(aggregation_level,tree_depth+1)]) 
