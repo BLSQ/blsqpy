@@ -129,7 +129,7 @@ WITH datasets_values_periods  (
             dataset_values.dataelement_uid,
             dataset_values.datalement_name,
             dataset_values.categoryoptioncombo_name,
-            dataset_values.perioid,
+            dataset_values.periodid,
             dataset_values.frequency       
             dataset_values.value
             period_structure.weekly,
@@ -138,7 +138,7 @@ WITH datasets_values_periods  (
             period_structure.yearly
         
     FROM dataset_values
-    JOIN period_structure ON dataset_values.periodid = period_structure.id
+    JOIN period_structure ON dataset_values.periodid = period_structure.periodid
     
 ),
 WITH pruned_orgunitstructured AS(
@@ -157,15 +157,14 @@ WITH pruned_orgunitstructured AS(
 ),
 SELECT      
 
-    dataset_values.dataset_name,
-    dataset_values.dataset_uid,
-    dataset_values.sourceid,
-    dataset_values.dataelement_uid,
-    dataset_values.datalement_name,
-    dataset_values.categoryoptioncombo_name,
-    dataset_values.perioid,
-    dataset_values.frequency       
-    dataset_values.value
+    datasets_values_periods.dataset_name,
+    datasets_values_periods.dataset_uid,
+    datasets_values_periods.sourceid,
+    datasets_values_periods.dataelement_uid,
+    datasets_values_periods.datalement_name,
+    datasets_values_periods.categoryoptioncombo_name,
+    datasets_values_periods.frequency       
+    datasets_values_periods.value
     period_structure.weekly,
     period_structure.mothly,
     period_structure.quarterly,
@@ -176,7 +175,17 @@ SELECT
     pruned_orgunitstructured.namelevel3,
     pruned_orgunitstructured.namelevel4,
     pruned_orgunitstructured.namelevel5,
-    pruned_orgunitstructured.organisationunituid
+    pruned_orgunitstructured.organisationunituid,
+    COUNT (*) AS values_expected,
+    COUNT(dataset_values.value) AS values_reported.
 
 FROM
-JOIN pruned_orgunitstructured ON datasets_values_periods.organisationunitid = pruned_orgunitstructured.organisationunitid
+JOIN pruned_orgunitstructured ON datasets_values_periods.sourceid = pruned_orgunitstructured.organisationunitid
+
+GROUP BY
+
+    dataset_values.dataset_uid,
+    dataset_values.dataelement_uid,
+    dataset_values.categoryoptioncombo_name,
+    dataset_values.periodid,
+    pruned_orgunitstructured.organisationunituid 
