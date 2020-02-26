@@ -16,10 +16,7 @@ WITH dataset_info AS(
     JOIN dataelement ON dataelement.dataelementid = datasetelement.dataelementid
     JOIN categorycombos_optioncombos ON categorycombos_optioncombos.categorycomboid = dataelement.categorycomboid
     JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = categorycombos_optioncombos.categoryoptioncomboid
-    
-    {% if dataset_uid_conditions %}    
-        WHERE {{dataset_uid_conditions}}
-    {% endif %}        
+    WHERE {{dataset_uid_conditions}}       
     
     ),
 

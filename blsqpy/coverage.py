@@ -8,6 +8,7 @@ class Coverage:
         self.facility_level = facility_level
         self.aggregation_level = aggregation_level
         self.dhis = dhis
+        self.hook=self.dhis.hook
         self.aggregation_level_uid_column = 'uidlevel' + \
             str(self.aggregation_level)
         self.orgunitstructure_table = orgunitstructure_table
@@ -65,6 +66,18 @@ class Coverage:
                              period_start=period_start, period_end=period_end)
         else:
             raise TypeError('Invalid "ids_type"')
+            
+            
+            
+    def completeness_for_data_sets(self, dataset_ids, organisation_uids_to_filter=None,
+                             period_start=None, period_end=None):
+
+        return self.hook.get_pandas_df(get_query("completeness_for_dataset", {
+            'dataset_uid_conditions': QueryTools.dataset_ids_condition_formatting(dataset_ids),
+            'period_start': period_start,
+            'period_end': period_end,
+            'organisation_uids_to_path_filter':QueryTools.organisation_uids_to_path_filter_formatting(organisation_uids_to_filter)
+        }))
         
 
     def for_data_elements(self, data_element_uids):

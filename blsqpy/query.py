@@ -21,6 +21,9 @@ class QueryTools:
     @staticmethod
     def dataset_to_sql_condition(dataset_id):
         return "( dataset.uid='{0}')".format(dataset_id)
+    @staticmethod
+    def orgunitpath_to_sql_condition(dataset_id):
+        return "(path like '%{0}%')".format(dataset_id)
 
     @staticmethod
     def de_ids_condition_formatting(de_ids):
@@ -34,3 +37,9 @@ class QueryTools:
             return ','.join(['_orgunitstructure.uidlevel'+str(x)+' AS '+str(organisationLevel_dict[x])
                                  if label else '_orgunitstructure.uidlevel'+str(x) for
                               x in range(aggregation_level,tree_depth+1)]) 
+
+    @staticmethod
+    def organisation_uids_to_path_filter_formatting(orgunit_ids):
+        if orgunit_ids:
+            return " OR ".join(list(map(QueryTools.orgunitpath_to_sql_condition, dataset_ids)))
+        return None
