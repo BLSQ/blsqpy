@@ -18,19 +18,26 @@ class Coverage:
         
     def get_organisationLevel_labels(self):
         level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
-        return pd.Series(level_Labels.name,index=level_Labels.level).to_dict()  
+        level_Labels.loc[:,'name']=level_Labels.name.str.lower().str.replace('[ ()]+', ' ',
+                        regex=True).str.strip().str.replace('[ ()]+', '_', regex=True)
+        return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict()  
     
     def _timeliness_for_data_elements(self, de_ids, aggregation_level=3,
                              averaged=False,
-                             period_start=None, period_end=None):
+                             period_start=None, period_end=None,names=False):
         
         organisationLevel_dict=self.get_organisationLevel_labels()
+        print(organisationLevel_dict)
         tree_depth=len(organisationLevel_dict)
         
         return self.hook.get_pandas_df(get_query("timeliness_for_de", {
             'averaged':averaged,
-            'ou_labeling':QueryTools.orgtree_sql_pruning(label=True,organisationLevel_dict,tree_depth) ,
-            'ou_structure': QueryTools.orgtree_sql_pruning(label=False,organisationLevel_dict,tree_depth),
+            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                         tree_depth,aggregation_level,
+                                                         label=True,names=names) ,
+            'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                           tree_depth,aggregation_level,
+                                                           label=False,names=names),
             'de_ids_conditions': QueryTools.de_ids_condition_formatting(de_ids),
             'period_start': period_start,
             'period_end': period_end
@@ -38,15 +45,19 @@ class Coverage:
     
     def _timeliness_for_data_sets(self, dataset_ids, aggregation_level=3,
                              averaged=False,
-                             period_start=None, period_end=None):
+                             period_start=None, period_end=None,names=False):
         
         organisationLevel_dict=self.get_organisationLevel_labels()
         tree_depth=len(organisationLevel_dict)
         
         return self.hook.get_pandas_df(get_query("timeliness_for_ds", {
             'averaged':averaged,
-            'ou_labeling':QueryTools.orgtree_sql_pruning(label=True,organisationLevel_dict,tree_depth) ,
-            'ou_structure': QueryTools.orgtree_sql_pruning(label=False,organisationLevel_dict,tree_depth),
+            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                         tree_depth,aggregation_level,
+                                                         label=True,names=names) ,
+            'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                           tree_depth,aggregation_level,
+                                                           label=False,names=names),
             'dataset_ids_conditions': QueryTools.dataset_ids_condition_formatting(dataset_ids),
             'period_start': period_start,
             'period_end': period_end
@@ -54,16 +65,16 @@ class Coverage:
 
     def timeliness(self, target_ids, aggregation_level=3,ids_type='dataset',
                              averaged=False,
-                             period_start=None, period_end=None):
+                             period_start=None, period_end=None,names=False):
         
         if ids_type=='dataset':
             self._timeliness_for_data_sets(dataset_ids=target_ids, aggregation_level=aggregation_level,
                              averaged=averaged,
-                             period_start=period_start, period_end=period_end)
+                             period_start=period_start, period_end=period_end,names=names)
         elif ids_type=='de':
             self._timeliness_for_data_elements(de_ids=target_ids, aggregation_level=aggregation_level,
                              averaged=averaged,
-                             period_start=period_start, period_end=period_end)
+                             period_start=period_start, period_end=period_end,names=names)
         else:
             raise TypeError('Invalid "ids_type"')
             

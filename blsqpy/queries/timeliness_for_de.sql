@@ -1,20 +1,20 @@
 SELECT 
 
-   {% if averaged %}
-       AVG(DATE(datavalue.created) - _periodstructure.enddate) AS timeliness ,
-   {% else %}
-       DATE(datavalue.created) - _periodstructure.enddate AS timeliness ,
-       dataelement.name AS name,
-   {% endif %}
-
-   {{ou_labeling}}
+       AVG(DATE(datavalue.created) - _periodstructure.enddate) AS timeliness,
+       {% if averaged == False or averaged == 'in_period' %}
+           dataelement.name AS name,
+       {% endif %}
+       {% if averaged == False or averaged == 'in_de' %}
+           _periodstructure.enddate,
+       {% endif %}
+       {{ou_labeling}}
        
 FROM datavalue
 JOIN dataelement
-  ON DE.dataelementid = datavalue.dataelementid
+  ON dataelement.dataelementid = datavalue.dataelementid
 JOIN _periodstructure
   ON datavalue.periodid = _periodstructure.periodid
-JOIN public._orgunitstructure
+JOIN _orgunitstructure
   ON datavalue.sourceid = _orgunitstructure.organisationunitid
 JOIN public.categoryoptioncombo
   ON datavalue.categoryoptioncomboid = categoryoptioncombo.categoryoptioncomboid
@@ -30,8 +30,10 @@ WHERE {{de_ids_conditions}}
 
 
 GROUP BY 
-         {% if averaged is False %}
+       {% if averaged == False or averaged == 'in_period' %}
              dataelement.name,
-         {% endif %}
+       {% endif %}
+       {% if averaged == False or averaged == 'in_de' %}
          _periodstructure.enddate,
-         {{ou_structure}}
+       {% endif %}
+       {{ou_structure}}
