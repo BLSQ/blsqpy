@@ -20,7 +20,7 @@ WITH dataset_info AS(
     
     ),
 
-WITH period_info_filtered AS (
+period_info_filtered AS (
         SELECT 
             period.periodid,
             period.periodtypeid,
@@ -39,15 +39,15 @@ WITH period_info_filtered AS (
         ),
         
 {% if organisation_uids_to_path_filter %}      
-    WITH organisation_info_filtered AS (
+organisation_info_filtered AS (
             SELECT 
                 organisationunitid
             FROM organisationunit
             WHERE {{organisation_uids_to_path_filter}}    
             ),
-{% endif %}        
+{% endif %} 
 
-WITH dataset_structure AS(
+dataset_structure AS(
         SELECT
             dataset_info.dataset_name,
             dataset_info.dataset_uid,
@@ -68,7 +68,7 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
 {% endif %}   
     ),
     
-WITH data_value_info AS(
+data_value_info AS(
         SELECT
             datavalue.dataelementid,
             datavalue.periodid,
@@ -79,7 +79,7 @@ WITH data_value_info AS(
     FROM datavalue
         ),
         
-WITH dataset_values AS(
+dataset_values AS(
         SELECT
             dataset_structure.dataset_name,
             dataset_structure.dataset_uid,
@@ -99,14 +99,14 @@ WITH dataset_values AS(
                 AND dataset_structure.categoryoptioncomboid = data_value_info.categoryoptioncomboid
                 ), 
 
-WITH period_tree AS(
+period_tree AS(
 
         SELECT 
             periodid,weekly,mothly,quarterly,yearly
         FROM _periodstructure
         ),
         
-WITH period_structure AS (
+period_structure AS (
          SELECT
              period_tree.periodid,
              period_tree.weekly,
@@ -118,7 +118,7 @@ WITH period_structure AS (
         JOIN period_tree ON period_info_filtered.periodid = period_tree.periodid
         ),
         
-WITH datasets_values_periods  (
+datasets_values_periods  (
     SELECT
             dataset_values.dataset_name,
             dataset_values.dataset_uid,
@@ -138,7 +138,7 @@ WITH datasets_values_periods  (
     JOIN period_structure ON dataset_values.periodid = period_structure.periodid
     
 ),
-WITH pruned_orgunitstructured AS(
+pruned_orgunitstructured AS(
     SELECT
           organisationunitid,
           level,

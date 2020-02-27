@@ -24,7 +24,8 @@ class Coverage:
     
     def _timeliness_for_data_elements(self, de_ids, aggregation_level=3,
                              averaged=False,
-                             period_start=None, period_end=None,names=False):
+                             period_start=None, period_end=None,names=False,
+                             tree_pruning=False):
         
         organisationLevel_dict=self.get_organisationLevel_labels()
         print(organisationLevel_dict)
@@ -34,10 +35,12 @@ class Coverage:
             'averaged':averaged,
             'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
                                                          tree_depth,aggregation_level,
-                                                         label=True,names=names) ,
+                                                         label=True,names=names,
+                                                         tree_pruning=tree_pruning),
             'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
                                                            tree_depth,aggregation_level,
-                                                           label=False,names=names),
+                                                           label=False,names=names,
+                                                         tree_pruning=tree_pruning),
             'de_ids_conditions': QueryTools.de_ids_condition_formatting(de_ids),
             'period_start': period_start,
             'period_end': period_end
@@ -45,7 +48,8 @@ class Coverage:
     
     def _timeliness_for_data_sets(self, dataset_ids, aggregation_level=3,
                              averaged=False,
-                             period_start=None, period_end=None,names=False):
+                             period_start=None, period_end=None,names=False,
+                             tree_pruning=False):
         
         organisationLevel_dict=self.get_organisationLevel_labels()
         tree_depth=len(organisationLevel_dict)
@@ -54,18 +58,21 @@ class Coverage:
             'averaged':averaged,
             'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
                                                          tree_depth,aggregation_level,
-                                                         label=True,names=names) ,
+                                                         label=True,names=names,
+                                                         tree_pruning=tree_pruning),
             'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
                                                            tree_depth,aggregation_level,
-                                                           label=False,names=names),
+                                                           label=False,names=names,
+                                                         tree_pruning=tree_pruning),
             'dataset_ids_conditions': QueryTools.dataset_ids_condition_formatting(dataset_ids),
             'period_start': period_start,
             'period_end': period_end
         }))
 
-    def timeliness(self, target_ids, aggregation_level=3,ids_type='dataset',
+    def timeliness(self, target_ids, ids_type='dataset',aggregation_level=3,
                              averaged=False,
-                             period_start=None, period_end=None,names=False):
+                             period_start=None, period_end=None,names=False,
+                             tree_pruning=False):
         
         if ids_type=='dataset':
             self._timeliness_for_data_sets(dataset_ids=target_ids, aggregation_level=aggregation_level,

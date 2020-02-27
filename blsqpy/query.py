@@ -33,15 +33,16 @@ class QueryTools:
         return " OR ".join(list(map(QueryTools.dataset_to_sql_condition, dataset_ids)))
     
     @staticmethod
-    def orgtree_sql_pruning(organisationLevel_dict,tree_depth,aggregation_level=1,label=False,names=False):
-            return ','.join(['_orgunitstructure.namelevel'+str(x)+' AS '+str(organisationLevel_dict[x])
+    def orgtree_sql_pruning(organisationLevel_dict,tree_depth,aggregation_level=1,label=False,names=False,tree_pruning=False):
+        iteration_tree =[aggregation_level] if tree_pruning else [x for x in range(aggregation_level,tree_depth+1)]   
+        return ','.join(['_orgunitstructure.namelevel'+str(x)+' AS '+str(organisationLevel_dict[x])
                                  if (label and names) else 
                             '_orgunitstructure.uidlevel'+str(x)+' AS '+str(organisationLevel_dict[x])
                                  if label else 
                             '_orgunitstructure.namelevel'+str(x)
                                  if names else 
                             '_orgunitstructure.uidlevel'+str(x) for
-                              x in range(aggregation_level,tree_depth+1)]) 
+                              x in iteration_tree]) 
 
     @staticmethod
     def organisation_uids_to_path_filter_formatting(orgunit_ids):
