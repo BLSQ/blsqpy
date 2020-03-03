@@ -168,7 +168,7 @@ class Dhis2(object):
                 return "( dataelement.uid='{0}' AND categoryoptioncombo.uid='{1}')".format(de_id, category_id)
             return "( dataelement.uid='{0}')".format(de_id)
 
-        de_ids_condition = QueryTools.de_ids_condition_formatting(de_ids)
+        de_ids_condition = QueryTools.uids_join_filter_formatting(de_ids)
 
         sql = get_query("extract_data", {
             'de_ids_conditions': de_ids_condition,
@@ -258,7 +258,7 @@ class Dhis2(object):
         raw.close()
         return self.hook.get_pandas_df("select * from "+table_name)
 
-    def get_geodataframe(self,geometry_type=None):
+    def get_geodataframe(self,geometry_type=None,level=None,crs={'init':'epsg:4326'}):
         sql="SELECT uid as id, path, coordinates, name as organisationunitname from organisationunit"
         if geometry_type == "point":
             sql=sql+" WHERE coordinates LIKE '[%' and coordinates NOT LIKE '[[%' "
@@ -269,8 +269,12 @@ class Dhis2(object):
         else:
             raise Exception("unsupported geometry type")
         df = self.hook.get_pandas_df(sql)
-        df["level"] = df.path.apply(lambda x: x.count('/') - 1)
+        df["level"] = df.path.apply(lambda x: x.count('/'))
+        if level:
+            df=df.query('level == '+str(level))
+            if df.empty:
+                raise ValueError('The level chosen does not have that type of coordinates associated')
         geometrify_df(df)
         print(df)
-        gdf = geopandas.GeoDataFrame(df)
+        gdf = geopandas.GeoDataFrame(df,crs=crs)
         return gdf

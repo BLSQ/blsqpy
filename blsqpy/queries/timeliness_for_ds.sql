@@ -4,23 +4,13 @@ SELECT
     period_structure_reduced.enddate,
     period_structure_reduced.startdate,
     lower(periodtype.name) AS frequency,
-    CASE WHEN lower(periodtype.name) = 'daily' THEN period_structure_reduced.daily
-    WHEN lower(periodtype.name) = 'weekly' THEN period_structure_reduced.weekly
-    WHEN lower(periodtype.name) = 'biweekly' THEN period_structure_reduced.biweekly
-    WHEN lower(periodtype.name) = 'monthly' THEN period_structure_reduced.monthly
-    WHEN lower(periodtype.name) = 'bimonthly' THEN period_structure_reduced.bimonthly
-    WHEN lower(periodtype.name) = 'quarterly' THEN period_structure_reduced.quarterly
-    WHEN lower(periodtype.name) = 'sixmonthly' THEN period_structure_reduced.sixmonthly
-    WHEN lower(periodtype.name) = 'yearly' THEN period_structure_reduced.yearly
-    ELSE 'Others'
-    END AS period_name
+    period_structure_reduced.iso AS period_name
     
 FROM     
     (SELECT periodid,
+            iso,
             enddate,
-            startdate,
-            daily,weekly,biweekly,monthly,bimonthly,quarterly,
-            sixmonthly,yearly            
+            startdate            
     FROM _periodstructure
     {% if period_start or period_end %}
         WHERE
@@ -44,15 +34,19 @@ ON  periodtypejoin.periodid =  period_structure_reduced.periodid
 JOIN periodtype 
 ON periodtype.periodtypeid = periodtypejoin.periodtypeid
 ),
-
 dataset_filtered AS(
+        SELECT name,
+               datasetid
+        FROM dataset
+        WHERE {{dataset_ids_conditions}}
+),
+dataset_set_filtered AS(
         SELECT 
                dataelement.uid AS dataelement_uid,
                dataset.name AS dataset_name
         FROM dataelement
         JOIN datasetelement ON datasetelement.dataelementid = dataelement.dataelementid
-        JOIN dataset ON dataset.datasetid = datasetelement.datasetid
-        WHERE {{dataset_ids_conditions}}      
+        JOIN dataset_filtered ON dataset_filtered.datasetid = datasetelement.datasetid     
    )
 
 SELECT 
@@ -78,7 +72,7 @@ JOIN _orgunitstructure
   ON datavalue.sourceid = _orgunitstructure.organisationunitid
 JOIN categoryoptioncombo
   ON datavalue.categoryoptioncomboid = categoryoptioncombo.categoryoptioncomboid
-JOIN dataset_filtered ON dataset_filtered.dataelement_uid = dataelement.uid
+JOIN dataset_set_filtered ON dataset_set_filtered.dataelement_uid = dataelement.uid
 
    {% if period_start or period_end %}
         WHERE
@@ -104,7 +98,7 @@ GROUP BY
          period_structure.frequency,
          period_structure.period_name,
        {% endif %}
-        dataset_filtered.dataset_name,
+        dataset_set_filtered.dataset_name,
        {{ou_structure}}
 
 

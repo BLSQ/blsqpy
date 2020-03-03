@@ -41,7 +41,7 @@ class Coverage:
                                                            tree_depth,aggregation_level,
                                                            label=False,names=names,
                                                          tree_pruning=tree_pruning),
-            'de_ids_conditions': QueryTools.de_ids_condition_formatting(de_ids),
+            'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids),
             'period_start': period_start,
             'period_end': period_end
         }))
@@ -64,7 +64,7 @@ class Coverage:
                                                            tree_depth,aggregation_level,
                                                            label=False,names=names,
                                                          tree_pruning=tree_pruning),
-            'dataset_ids_conditions': QueryTools.dataset_ids_condition_formatting(dataset_ids),
+            'dataset_ids_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
             'period_start': period_start,
             'period_end': period_end
         }))
@@ -91,10 +91,34 @@ class Coverage:
                              period_start=None, period_end=None):
 
         return self.hook.get_pandas_df(get_query("completeness_for_dataset", {
-            'dataset_uid_conditions': QueryTools.dataset_ids_condition_formatting(dataset_ids),
+            'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
             'period_start': period_start,
             'period_end': period_end,
-            'organisation_uids_to_path_filter':QueryTools.organisation_uids_to_path_filter_formatting(organisation_uids_to_filter)
+            'organisation_uids_to_path_filter':QueryTools.uids_join_filter_formatting(
+                    organisation_uids_to_filter,overwrite_type='path',exact_like='like')
+        }))
+        
+        
+    def extract_data_short(self, de_ids, aggregation_level=3,
+                             period_start=None, period_end=None,names=False,
+                             tree_pruning=False):
+        
+        organisationLevel_dict=self.get_organisationLevel_labels()
+        tree_depth=len(organisationLevel_dict)
+
+        return self.hook.get_pandas_df(get_query("extract_data_short", {
+            'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids,exact_like='like'),
+            
+            'period_start': None if period_start==None else QueryTools.period_range_to_sql(
+                    end_start='startdate',period_range=period_start[0],range_limits=period_start[1]),
+            
+            'period_end': None if period_end==None else QueryTools.period_range_to_sql(
+                    end_start='enddate',period_range=period_end[0],range_limits=period_end[1]),
+            
+            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                         tree_depth,aggregation_level,
+                                                         label='top',names=names,
+                                                         tree_pruning=tree_pruning)
         }))
         
 

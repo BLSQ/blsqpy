@@ -4,25 +4,27 @@ SELECT
     period_structure_reduced.enddate,
     period_structure_reduced.startdate,
     lower(periodtype.name) AS frequency,
-    CASE WHEN lower(periodtype.name) = 'daily' THEN period_structure_reduced.daily
-    WHEN lower(periodtype.name) = 'weekly' THEN period_structure_reduced.weekly
-    WHEN lower(periodtype.name) = 'biweekly' THEN period_structure_reduced.biweekly
-    WHEN lower(periodtype.name) = 'monthly' THEN period_structure_reduced.monthly
-    WHEN lower(periodtype.name) = 'bimonthly' THEN period_structure_reduced.bimonthly
-    WHEN lower(periodtype.name) = 'quarterly' THEN period_structure_reduced.quarterly
-    WHEN lower(periodtype.name) = 'sixmonthly' THEN period_structure_reduced.sixmonthly
-    WHEN lower(periodtype.name) = 'yearly' THEN period_structure_reduced.yearly
-    ELSE 'Others'
-    END AS period_name
+    period_structure_reduced.iso AS period_name
     
 FROM     
     (SELECT periodid,
+            iso,
             enddate,
-            startdate,
-            daily,weekly,biweekly,monthly,bimonthly,quarterly,
-            sixmonthly,yearly            
-    FROM _periodstructure) AS period_structure_reduced 
-
+            startdate            
+    {% if period_start or period_end %}
+        WHERE
+   {% endif %}
+   {% if period_start %}
+        _periodstructure.startdate >= '{{period_start}}'
+   {% endif %}
+   {% if period_start and period_end %}
+        AND
+   {% endif %}
+   {% if period_end %}
+        _periodstructure.enddate <= '{{period_end}}'
+   {% endif %}
+    
+    ) AS period_structure_reduced 
 JOIN 
     (SELECT periodid,periodtypeid 
     FROM period) AS periodtypejoin 
