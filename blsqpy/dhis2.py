@@ -160,14 +160,6 @@ class Dhis2(object):
         print("fetching data values from",
               getattr(self.hook, self.hook.conn_name_attr), "for", ",".join(de_ids))
 
-        def to_sql_condition(de):
-            splitted = de.split(".")
-            de_id = splitted[0]
-            if len(splitted) > 1:
-                category_id = splitted[1]
-                return "( dataelement.uid='{0}' AND categoryoptioncombo.uid='{1}')".format(de_id, category_id)
-            return "( dataelement.uid='{0}')".format(de_id)
-
         de_ids_condition = QueryTools.uids_join_filter_formatting(de_ids)
 
         sql = get_query("extract_data", {

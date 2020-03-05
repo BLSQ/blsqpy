@@ -50,7 +50,10 @@ class Coverage:
             'period_end': self._period_end,
             'organisation_uids_to_path_filter':self._organisation_uids_to_path_filter,
             }
-        
+        self._timeliness_dict={
+                'dataset':['timeliness_for_ds','dataset_ids_conditions'],
+                'de':['timeliness_for_de','de_ids_conditions']
+                }
         
         
         
@@ -60,32 +63,19 @@ class Coverage:
                         regex=True).str.strip().str.replace('[ ()]+', '_', regex=True)
         return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict()  
     
-    def _timeliness_for_data_elements(self, de_ids, averaged=False):
-        
-        return self.hook.get_pandas_df(get_query("timeliness_for_de",
-            self._query_common_dict.update({
-                    'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids),
-                    'averaged':averaged
-                    })
-            ))
-    
-    def _timeliness_for_data_sets(self, dataset_ids, averaged=False):
-        
-        return self.hook.get_pandas_df(get_query("timeliness_for_ds",
-            self._query_common_dict.update({
-                    'dataset_ids_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
-                    'averaged':averaged
-                    })
-        ))
 
     def timeliness(self, target_ids, ids_type='dataset',averaged=False):
         
-        if ids_type=='dataset':
-            self._timeliness_for_data_sets(dataset_ids=target_ids,averaged=averaged)
-        elif ids_type=='de':
-            self._timeliness_for_data_elements(de_ids=target_ids,averaged=averaged)
-        else:
+        
+        if ids_type not in self._timeliness_dict.keys():
             raise TypeError('Invalid "ids_type"')
+            
+        return self.hook.get_pandas_df(get_query(self._timeliness_dict[str(ids_type)][0],
+            self._query_common_dict.update({
+                    self._timeliness_dict[str(ids_type)][1]: QueryTools.uids_join_filter_formatting(target_ids),
+                    'averaged':averaged
+                    })
+        ))           
               
             
     def completeness_for_data_sets(self, dataset_ids):
