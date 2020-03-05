@@ -1,8 +1,39 @@
-WITH dataset_info AS(
-        SELECT 
-            dataset.name AS dataset_name,
-            dataset.uid AS dataset_uid,
+
+
+WITH dataset_reduced AS (
+    SELECT
+            dataset.name,
+            dataset.uid,
             dataset.periodtypeid,
+            dataset.datasetid
+    FROM dataset
+    WHERE {{dataset_uid_conditions}} 
+
+),
+period_structure AS(      
+    SELECT 
+            periodid,
+            iso
+    FROM _periodstructure         
+    {% if period_start or period_end %}
+        WHERE
+   {% endif %}
+   {% if period_start %}
+        {{period_start}}
+   {% endif %}
+   {% if period_start and period_end %}
+        AND
+   {% endif %}
+   {% if period_end %}
+        {{period_end}}
+   {% endif %}
+),
+
+dataset_info AS(
+        SELECT 
+            dataset_reduced.name AS dataset_name,
+            dataset_reduced.uid AS dataset_uid,
+            dataset_reduced.periodtypeid,
             datasetsource.sourceid,
             dataelement.dataelementid,
             dataelement.uid AS dataelement_uid,
@@ -10,32 +41,24 @@ WITH dataset_info AS(
             categoryoptioncombo.categoryoptioncomboid,
             categoryoptioncombo.name AS categoryoptioncombo_name
                 
-    FROM dataset
-    JOIN datasetsource ON datasetsource.datasetid = dataset.datasetid
-    JOIN datasetelement ON datasetelement.datasetid = dataset.datasetid
+    FROM dataset_reduced
+    JOIN datasetsource ON datasetsource.datasetid = dataset_reduced.datasetid
+    JOIN datasetelement ON datasetelement.datasetid = dataset_reduced.datasetid
     JOIN dataelement ON dataelement.dataelementid = datasetelement.dataelementid
     JOIN categorycombos_optioncombos ON categorycombos_optioncombos.categorycomboid = dataelement.categorycomboid
-    JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = categorycombos_optioncombos.categoryoptioncomboid
-    WHERE {{dataset_uid_conditions}}       
-    
+    JOIN categoryoptioncombo ON categoryoptioncombo.categoryoptioncomboid = categorycombos_optioncombos.categoryoptioncomboid      
     ),
 
 period_info_filtered AS (
         SELECT 
-            period.periodid,
+            period_structure.periodid,
+            period_structure.iso,
             period.periodtypeid,
-            lower(periodtype.name) AS frequency
-        FROM _periodstructure
+            periodtype.name AS frequency
+        FROM period_structure
+        JOIN period ON period_structure.periodid = period.periodid
         JOIN periodtype ON periodtype.periodtypeid = period.periodtypeid
-        WHERE period.periodtypeid in (SELECT periodtypeid FROM dataset_info)
-    
-        {% if period_start %}
-            and period.startdate >= '{{period_start}}'
-        {% endif %}
-
-        {% if period_end %}
-            and period.enddate <= '{{period_end}}'
-        {% endif %}
+        WHERE period.periodtypeid in (SELECT periodtypeid FROM dataset_reduced)
         ),
         
 {% if organisation_uids_to_path_filter %}      
@@ -57,132 +80,45 @@ dataset_structure AS(
             dataset_info.dataelement_uid,
             dataset_info.categoryoptioncomboid,
             dataset_info.categoryoptioncombo_name,
-            period_info_filtered.perioid,
-            period_info_filtered.frequency
+            period_info_filtered.periodid,
+            period_info_filtered.frequency,
+            period_info_filtered.iso
 FROM dataset_info
 JOIN period_info_filtered
 ON dataset_info.periodtypeid = period_info_filtered.periodtypeid  
 
 {% if organisation_uids_to_path_filter %} 
     WHERE dataset_info.sourceid in (SELECT organisationunitid FROM organisation_info_filtered )
-{% endif %}   
-    ),
+{% endif %}
+
+    )
     
-data_value_info AS(
         SELECT
-            datavalue.dataelementid,
-            datavalue.periodid,
-            datavalue.sourceid,
-            datavalue.categoryoptioncomboid,
-            datavalue.value
-        
-    FROM datavalue
-        ),
-        
-dataset_values AS(
-        SELECT
-            dataset_structure.dataset_name,
             dataset_structure.dataset_uid,
-            dataset_structure.sourceid,
+--            dataset_structure.sourceid,
             dataset_structure.dataelement_uid,
-            dataset_structure.datalement_name,
             dataset_structure.categoryoptioncombo_name,
-            dataset_structure.perioid,
-            dataset_structure.frequency       
-            data_value_info.value
-
+            dataset_structure.periodid,
+            dataset_structure.iso,
+            COUNT (*) AS values_expected,
+            COUNT(datavalue.value) AS values_reported,
+            {{ou_labeling}}      
+            
         FROM dataset_structure
-        LEFT JOIN data_value_info ON  (
-                    dataset_structure.dataelementid = data_value_info.dataelementid 
-                AND dataset_structure.periodid = data_value_info.periodid 
-                AND dataset_structure.sourceid = data_value_info.sourceid
-                AND dataset_structure.categoryoptioncomboid = data_value_info.categoryoptioncomboid
-                ), 
-
-period_tree AS(
-
-        SELECT 
-            periodid,weekly,mothly,quarterly,yearly
-        FROM _periodstructure
-        ),
+        LEFT JOIN datavalue ON  (
+                    dataset_structure.dataelementid = datavalue.dataelementid 
+                AND dataset_structure.periodid = datavalue.periodid 
+                AND dataset_structure.sourceid = datavalue.sourceid
+                AND dataset_structure.categoryoptioncomboid = datavalue.categoryoptioncomboid
+                )
+        JOIN _orgunitstructure ON dataset_structure.sourceid = _orgunitstructure.organisationunitid
         
-period_structure AS (
-         SELECT
-             period_tree.periodid,
-             period_tree.weekly,
-             period_tree.mothly,
-             period_tree.quarterly,
-             period_tree.yearly
-             
-        FROM period_info_filtered
-        JOIN period_tree ON period_info_filtered.periodid = period_tree.periodid
-        ),
         
-datasets_values_periods  (
-    SELECT
-            dataset_values.dataset_name,
-            dataset_values.dataset_uid,
-            dataset_values.sourceid,
-            dataset_values.dataelement_uid,
-            dataset_values.datalement_name,
-            dataset_values.categoryoptioncombo_name,
-            dataset_values.periodid,
-            dataset_values.frequency       
-            dataset_values.value
-            period_structure.weekly,
-            period_structure.mothly,
-            period_structure.quarterly,
-            period_structure.yearly
-        
-    FROM dataset_values
-    JOIN period_structure ON dataset_values.periodid = period_structure.periodid
-    
-),
-pruned_orgunitstructured AS(
-    SELECT
-          organisationunitid,
-          level,
-          namelevel1,
-          namelevel2,
-          namelevel3,
-          namelevel4,
-          namelevel5,
-          organisationunituid
-          
-    FROM _orgunitstructure
-
-),
-SELECT      
-
-    datasets_values_periods.dataset_name,
-    datasets_values_periods.dataset_uid,
-    datasets_values_periods.sourceid,
-    datasets_values_periods.dataelement_uid,
-    datasets_values_periods.datalement_name,
-    datasets_values_periods.categoryoptioncombo_name,
-    datasets_values_periods.frequency       
-    datasets_values_periods.value
-    period_structure.weekly,
-    period_structure.mothly,
-    period_structure.quarterly,
-    period_structure.yearly,
-    pruned_orgunitstructured.level,
-    pruned_orgunitstructured.namelevel1,
-    pruned_orgunitstructured.namelevel2,
-    pruned_orgunitstructured.namelevel3,
-    pruned_orgunitstructured.namelevel4,
-    pruned_orgunitstructured.namelevel5,
-    pruned_orgunitstructured.organisationunituid,
-    COUNT (*) AS values_expected,
-    COUNT(dataset_values.value) AS values_reported.
-
-FROM
-JOIN pruned_orgunitstructured ON datasets_values_periods.sourceid = pruned_orgunitstructured.organisationunitid
-
-GROUP BY
-
-    dataset_values.dataset_uid,
-    dataset_values.dataelement_uid,
-    dataset_values.categoryoptioncombo_name,
-    dataset_values.periodid,
-    pruned_orgunitstructured.organisationunituid 
+        GROUP BY
+            dataset_structure.dataset_uid,
+--            dataset_structure.sourceid,
+            dataset_structure.dataelement_uid,
+            dataset_structure.categoryoptioncombo_name,
+            dataset_structure.periodid,
+            dataset_structure.iso,
+            {{ou_structure}}

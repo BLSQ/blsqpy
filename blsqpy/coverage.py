@@ -4,17 +4,41 @@ from .query import get_query,QueryTools
 
 class Coverage:
 
-    def __init__(self, dhis, facility_level=5, aggregation_level=3, orgunitstructure_table="_orgunitstructure", s3ExportsHook=None, conn_id=None, bucket=None):
-        self.facility_level = facility_level
-        self.aggregation_level = aggregation_level
-        self.dhis = dhis
-        self.hook=self.dhis.hook
-        self.aggregation_level_uid_column = 'uidlevel' + \
-            str(self.aggregation_level)
-        self.orgunitstructure_table = orgunitstructure_table
-        self.s3ExportsHook = s3ExportsHook
-        self.conn_id = conn_id
-        self.bucket = bucket
+    def __init__(self, 
+                 dhis,aggregation_level=3,
+                 names=False,
+                 tree_pruning=False
+                 ):
+        
+        self._aggregation_level = aggregation_level
+        self._hook=self.dhis.hook
+#        self.aggregation_level_uid_column = 'uidlevel' + \
+#            str(self.aggregation_level)
+#        self.orgunitstructure_table = orgunitstructure_table
+#        self.s3ExportsHook = s3ExportsHook
+#        self.conn_id = conn_id
+#        self.bucket = bucket
+        self._organisationLevel_dict=self.get_organisationLevel_labels()
+        self._tree_depth=len(self.organisationLevel_dict)
+        self._period_start=QueryTools.period_range_to_sql(
+                    end_start='startdate',period_range=period_start[0],
+                    range_limits=period_start[1]) if period_start else None
+        self._period_end=QueryTools.period_range_to_sql(
+                    end_start='enddate',period_range=period_end[0],
+                    range_limits=period_end[1]) if period_end else Non
+                
+        self._organisation_uids_to_path_filter=QueryTools.uids_join_filter_formatting(
+                organisation_uids_to_filter,overwrite_type='path',exact_like='like'
+                ) if organisation_uids_to_filter else None
+                
+        self._ou_labeling=QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                         tree_depth,aggregation_level,
+                                                         label=True,names=names,
+                                                         tree_pruning=tree_pruning)
+        self._ou_structure=QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                           tree_depth,aggregation_level,
+                                                           label=False,names=names,
+                                                         tree_pruning=tree_pruning)
         
     def get_organisationLevel_labels(self):
         level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
@@ -87,15 +111,35 @@ class Coverage:
             
             
             
-    def completeness_for_data_sets(self, dataset_ids, organisation_uids_to_filter=None,
-                             period_start=None, period_end=None):
+    def completeness_for_data_sets(self, dataset_ids,aggregation_level=3, organisation_uids_to_filter=None,
+                             period_start=None, period_end=None,names=False,
+                             tree_pruning=False):
+        
+        organisationLevel_dict=self.get_organisationLevel_labels()
+        tree_depth=len(organisationLevel_dict)
 
         return self.hook.get_pandas_df(get_query("completeness_for_dataset", {
             'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
-            'period_start': period_start,
-            'period_end': period_end,
-            'organisation_uids_to_path_filter':QueryTools.uids_join_filter_formatting(
-                    organisation_uids_to_filter,overwrite_type='path',exact_like='like')
+            'period_start': None if period_start==None else QueryTools.period_range_to_sql(
+                    end_start='startdate',period_range=period_start[0],range_limits=period_start[1]),
+            'period_end': None if period_end==None else QueryTools.period_range_to_sql(
+                    end_start='enddate',period_range=period_end[0],range_limits=period_end[1]),
+            'organisation_uids_to_path_filter':None if organisation_uids_to_filter==None else
+            QueryTools.uids_join_filter_formatting(organisation_uids_to_filter,
+                                                   overwrite_type='path',exact_like='like'),
+            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                         tree_depth,aggregation_level,
+                                                         label=True,names=names,
+                                                         tree_pruning=tree_pruning),
+            'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
+                                                           tree_depth,aggregation_level,
+                                                           label=False,names=names,
+                                                         tree_pruning=tree_pruning),
+            
+            
+            
+            
+            
         }))
         
         

@@ -1,6 +1,6 @@
 import os
 from jinja2 import Environment, FileSystemLoader
-
+import functools
 QUERIES_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def get_query(query_name, params):
@@ -31,11 +31,11 @@ class QueryTools:
         if info_ids:
             if exact_like =='exact':
                 if overwrite_type:
-                    return    (" "+str(join_type)+" ").join(list(map(QueryTools._id_to_sql_condition_exact(info_type=overwrite_type), info_ids)))
+                    return    (" "+str(join_type)+" ").join(list(map(functools.partial(QueryTools._id_to_sql_condition_exact,info_type=overwrite_type)  , info_ids)))
                 return (" "+str(join_type)+" ").join(list(map(QueryTools._id_to_sql_condition_exact, info_ids)))
             elif exact_like =='like':
                 if overwrite_type:
-                    return    (" "+str(join_type)+" ").join(list(map(QueryTools._id_to_sql_condition_like(info_type=overwrite_type), info_ids)))
+                    return    (" "+str(join_type)+" ").join(list(map(functools.partial(QueryTools._id_to_sql_condition_like,info_type=overwrite_type), info_ids)))
                 return (" "+str(join_type)+" ").join(list(map(QueryTools._id_to_sql_condition_like, info_ids)))
             else:
                 raise TypeError('Invalid exact_like')
@@ -67,7 +67,7 @@ class QueryTools:
                                  if names else 
                             '_orgunitstructure.uidlevel'+str(x) for
                               x in iteration_tree]) 
-            
+          
     @staticmethod
     def period_range_to_sql(end_start,period_range,range_limits='include'):
         
@@ -76,7 +76,7 @@ class QueryTools:
                 'exclude':['>','<'],
                 'left':['>=','<'],
                 'right':['>','<='],
-                'from':['=>'],
+                'from':['>='],
                 'until':['<='],
                 'over':['>'],
                 'under':['<'],
