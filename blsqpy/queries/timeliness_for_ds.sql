@@ -16,13 +16,13 @@ FROM
         WHERE
    {% endif %}
    {% if period_start %}
-        _periodstructure.startdate >= '{{period_start}}'
+        {{period_start}}
    {% endif %}
    {% if period_start and period_end %}
         AND
    {% endif %}
    {% if period_end %}
-        _periodstructure.enddate <= '{{period_end}}'
+        {{period_end}}
    {% endif %}
     
     ) AS period_structure_reduced 

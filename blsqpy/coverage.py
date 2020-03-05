@@ -5,40 +5,54 @@ from .query import get_query,QueryTools
 class Coverage:
 
     def __init__(self, 
-                 dhis,aggregation_level=3,
+                 dhis,
+                 period_start=None,
+                 period_end=None,
+                 organisation_uids_to_filter=None,
+                 aggregation_level=3,
                  names=False,
                  tree_pruning=False
                  ):
         
         self._aggregation_level = aggregation_level
         self._hook=self.dhis.hook
-#        self.aggregation_level_uid_column = 'uidlevel' + \
-#            str(self.aggregation_level)
-#        self.orgunitstructure_table = orgunitstructure_table
-#        self.s3ExportsHook = s3ExportsHook
-#        self.conn_id = conn_id
-#        self.bucket = bucket
+        self._names=names
+        self._tree_pruning=tree_pruning
+        self.aggregation_level_uid_column = 'uidlevel' + \
+          str(self._aggregation_level)
+        self.orgunitstructure_table = "_orgunitstructure"
+        self.s3ExportsHook = None
+        self.conn_id = None
+        self.bucket = None
         self._organisationLevel_dict=self.get_organisationLevel_labels()
-        self._tree_depth=len(self.organisationLevel_dict)
+        self._tree_depth=len(self._organisationLevel_dict)
         self._period_start=QueryTools.period_range_to_sql(
                     end_start='startdate',period_range=period_start[0],
                     range_limits=period_start[1]) if period_start else None
         self._period_end=QueryTools.period_range_to_sql(
                     end_start='enddate',period_range=period_end[0],
-                    range_limits=period_end[1]) if period_end else Non
-                
+                    range_limits=period_end[1]) if period_end else None                
         self._organisation_uids_to_path_filter=QueryTools.uids_join_filter_formatting(
                 organisation_uids_to_filter,overwrite_type='path',exact_like='like'
-                ) if organisation_uids_to_filter else None
-                
-        self._ou_labeling=QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                         tree_depth,aggregation_level,
+                ) if organisation_uids_to_filter else None                
+        self._ou_labeling=QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
+                                                         self._tree_depth,aggregation_level,
                                                          label=True,names=names,
                                                          tree_pruning=tree_pruning)
-        self._ou_structure=QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                           tree_depth,aggregation_level,
+        self._ou_structure=QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
+                                                           self._tree_depth,aggregation_level,
                                                            label=False,names=names,
                                                          tree_pruning=tree_pruning)
+        self._query_common_dict={
+            'ou_labeling':self._ou_labeling,
+            'ou_structure': self._ou_structure,
+            'period_start': self._period_start,
+            'period_end': self._period_end,
+            'organisation_uids_to_path_filter':self._organisation_uids_to_path_filter,
+            }
+        
+        
+        
         
     def get_organisationLevel_labels(self):
         level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
@@ -46,129 +60,61 @@ class Coverage:
                         regex=True).str.strip().str.replace('[ ()]+', '_', regex=True)
         return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict()  
     
-    def _timeliness_for_data_elements(self, de_ids, aggregation_level=3,
-                             averaged=False,
-                             period_start=None, period_end=None,names=False,
-                             tree_pruning=False):
+    def _timeliness_for_data_elements(self, de_ids, averaged=False):
         
-        organisationLevel_dict=self.get_organisationLevel_labels()
-        print(organisationLevel_dict)
-        tree_depth=len(organisationLevel_dict)
-        
-        return self.hook.get_pandas_df(get_query("timeliness_for_de", {
-            'averaged':averaged,
-            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                         tree_depth,aggregation_level,
-                                                         label=True,names=names,
-                                                         tree_pruning=tree_pruning),
-            'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                           tree_depth,aggregation_level,
-                                                           label=False,names=names,
-                                                         tree_pruning=tree_pruning),
-            'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids),
-            'period_start': period_start,
-            'period_end': period_end
-        }))
+        return self.hook.get_pandas_df(get_query("timeliness_for_de",
+            self._query_common_dict.update({
+                    'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids),
+                    'averaged':averaged
+                    })
+            ))
     
-    def _timeliness_for_data_sets(self, dataset_ids, aggregation_level=3,
-                             averaged=False,
-                             period_start=None, period_end=None,names=False,
-                             tree_pruning=False):
+    def _timeliness_for_data_sets(self, dataset_ids, averaged=False):
         
-        organisationLevel_dict=self.get_organisationLevel_labels()
-        tree_depth=len(organisationLevel_dict)
-        
-        return self.hook.get_pandas_df(get_query("timeliness_for_ds", {
-            'averaged':averaged,
-            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                         tree_depth,aggregation_level,
-                                                         label=True,names=names,
-                                                         tree_pruning=tree_pruning),
-            'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                           tree_depth,aggregation_level,
-                                                           label=False,names=names,
-                                                         tree_pruning=tree_pruning),
-            'dataset_ids_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
-            'period_start': period_start,
-            'period_end': period_end
-        }))
+        return self.hook.get_pandas_df(get_query("timeliness_for_ds",
+            self._query_common_dict.update({
+                    'dataset_ids_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
+                    'averaged':averaged
+                    })
+        ))
 
-    def timeliness(self, target_ids, ids_type='dataset',aggregation_level=3,
-                             averaged=False,
-                             period_start=None, period_end=None,names=False,
-                             tree_pruning=False):
+    def timeliness(self, target_ids, ids_type='dataset',averaged=False):
         
         if ids_type=='dataset':
-            self._timeliness_for_data_sets(dataset_ids=target_ids, aggregation_level=aggregation_level,
-                             averaged=averaged,
-                             period_start=period_start, period_end=period_end,names=names)
+            self._timeliness_for_data_sets(dataset_ids=target_ids,averaged=averaged)
         elif ids_type=='de':
-            self._timeliness_for_data_elements(de_ids=target_ids, aggregation_level=aggregation_level,
-                             averaged=averaged,
-                             period_start=period_start, period_end=period_end,names=names)
+            self._timeliness_for_data_elements(de_ids=target_ids,averaged=averaged)
         else:
             raise TypeError('Invalid "ids_type"')
+              
             
-            
-            
-    def completeness_for_data_sets(self, dataset_ids,aggregation_level=3, organisation_uids_to_filter=None,
-                             period_start=None, period_end=None,names=False,
-                             tree_pruning=False):
+    def completeness_for_data_sets(self, dataset_ids):
         
-        organisationLevel_dict=self.get_organisationLevel_labels()
-        tree_depth=len(organisationLevel_dict)
-
-        return self.hook.get_pandas_df(get_query("completeness_for_dataset", {
-            'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
-            'period_start': None if period_start==None else QueryTools.period_range_to_sql(
-                    end_start='startdate',period_range=period_start[0],range_limits=period_start[1]),
-            'period_end': None if period_end==None else QueryTools.period_range_to_sql(
-                    end_start='enddate',period_range=period_end[0],range_limits=period_end[1]),
-            'organisation_uids_to_path_filter':None if organisation_uids_to_filter==None else
-            QueryTools.uids_join_filter_formatting(organisation_uids_to_filter,
-                                                   overwrite_type='path',exact_like='like'),
-            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                         tree_depth,aggregation_level,
-                                                         label=True,names=names,
-                                                         tree_pruning=tree_pruning),
-            'ou_structure': QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                           tree_depth,aggregation_level,
-                                                           label=False,names=names,
-                                                         tree_pruning=tree_pruning),
+        return self.hook.get_pandas_df(get_query("completeness_for_dataset", 
+            self._query_common_dict.update({
+                    'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
+                    })
             
-            
-            
-            
-            
-        }))
+            ))
         
         
-    def extract_data_short(self, de_ids, aggregation_level=3,
-                             period_start=None, period_end=None,names=False,
-                             tree_pruning=False):
+    def extract_data_short(self, de_ids):
         
-        organisationLevel_dict=self.get_organisationLevel_labels()
-        tree_depth=len(organisationLevel_dict)
-
-        return self.hook.get_pandas_df(get_query("extract_data_short", {
-            'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids,exact_like='like'),
-            
-            'period_start': None if period_start==None else QueryTools.period_range_to_sql(
-                    end_start='startdate',period_range=period_start[0],range_limits=period_start[1]),
-            
-            'period_end': None if period_end==None else QueryTools.period_range_to_sql(
-                    end_start='enddate',period_range=period_end[0],range_limits=period_end[1]),
-            
-            'ou_labeling':QueryTools.orgtree_sql_pruning(organisationLevel_dict,
-                                                         tree_depth,aggregation_level,
-                                                         label='top',names=names,
-                                                         tree_pruning=tree_pruning)
-        }))
+        return self.hook.get_pandas_df(get_query("extract_data_short", 
+            self._query_common_dict.update({
+                    'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids,exact_like='like'),
+                    'ou_labeling':QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
+                                                         self._tree_depth,self._aggregation_level,
+                                                         label='top',names=self._names,
+                                                         tree_pruning=self._tree_pruning)
+                    })
+                    
+        ))
         
 
     def for_data_elements(self, data_element_uids):
         df = self.dhis.get_coverage_de_coc(
-            aggregation_level=self.aggregation_level,
+            aggregation_level=self._aggregation_level,
             data_element_uids=data_element_uids,
             orgunitstructure_table=self.orgunitstructure_table
         )
