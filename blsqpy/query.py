@@ -24,22 +24,35 @@ class QueryTools:
         return "( " +str(info_type)+" like '%{0}%')".format(info_id)
     
     @staticmethod
-    def uids_join_filter_formatting(info_ids,overwrite_type=None, join_type='OR',exact_like='exact'):
+    def _function_selector_filling(function,overwrite_type=None):
+        if overwrite_type:
+            return functools.partial(function,info_type=overwrite_type)
+        else:
+            return function
+    
+    @staticmethod
+    def _function_selector_full_formatting(overwrite_type=None,exact_like='exact'):
+        if (exact_like !='exact' or exact_like !='like' ):
+            raise TypeError('Invalid exact_like')
+        function_selector_dict={
+                'exact':QueryTools._id_to_sql_condition_exact,
+                'like':QueryTools._id_to_sql_condition_like
+        }
         
+        return QueryTools._function_selector_filling(function_selector_dict[str(exact_like)])
+    
+    @staticmethod
+    def uids_join_filter_formatting(info_ids,overwrite_type=None, join_type='OR',exact_like='exact'):
+    
         if (join_type !='OR' and join_type !='AND'):
             raise TypeError('Invalid join_type')
+            
         if info_ids:
-            if exact_like =='exact':
-                if overwrite_type:
-                    return    (" "+str(join_type)+" ").join(list(map(functools.partial(QueryTools._id_to_sql_condition_exact,info_type=overwrite_type)  , info_ids)))
-                return (" "+str(join_type)+" ").join(list(map(QueryTools._id_to_sql_condition_exact, info_ids)))
-            elif exact_like =='like':
-                if overwrite_type:
-                    return    (" "+str(join_type)+" ").join(list(map(functools.partial(QueryTools._id_to_sql_condition_like,info_type=overwrite_type), info_ids)))
-                return (" "+str(join_type)+" ").join(list(map(QueryTools._id_to_sql_condition_like, info_ids)))
-            else:
-                raise TypeError('Invalid exact_like')
-        return None
+            return (" "+str(join_type)+" ").join(
+                    list(map(QueryTools._function_selector_full_formatting(overwrite_type,exact_like),
+                             info_ids)))
+        else:
+            return None
     
 
     @staticmethod

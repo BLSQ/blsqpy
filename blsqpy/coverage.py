@@ -26,22 +26,14 @@ class Coverage:
         self.bucket = None
         self._organisationLevel_dict=self.get_organisationLevel_labels()
         self._tree_depth=len(self._organisationLevel_dict)
-        self._period_start=QueryTools.period_range_to_sql(
-                    end_start='startdate',period_range=period_start[0],
-                    range_limits=period_start[1]) if period_start else None
-        self._period_end=QueryTools.period_range_to_sql(
-                    end_start='enddate',period_range=period_end[0],
-                    range_limits=period_end[1]) if period_end else None                
-        self._organisation_uids_to_path_filter=QueryTools.uids_join_filter_formatting(
-                organisation_uids_to_filter,overwrite_type='path',exact_like='like'
-                ) if organisation_uids_to_filter else None                
-        self._ou_labeling=QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
-                                                         self._tree_depth,aggregation_level,
-                                                         label=True,names=names,
+        self._period_start=self._period_sql_fucntion_filling(
+                end_start='startdate',period_values=period_start)
+        self._period_end=self._period_sql_fucntion_filling(
+                end_start='enddate',period_values=period_end)                
+        self._organisation_uids_to_path_filter=self._org_path_filling(organisation_uids_to_filter)                
+        self._ou_labeling=self._org_sql_fucntion_filling(label=True,names=names,
                                                          tree_pruning=tree_pruning)
-        self._ou_structure=QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
-                                                           self._tree_depth,aggregation_level,
-                                                           label=False,names=names,
+        self._ou_structure=self._org_sql_fucntion_filling(label=False,names=names,
                                                          tree_pruning=tree_pruning)
         self._query_common_dict={
             'ou_labeling':self._ou_labeling,
@@ -56,7 +48,21 @@ class Coverage:
                 }
         
         
-        
+    def _period_sql_fucntion_filling(self,end_start,period_values):
+        return QueryTools.period_range_to_sql(
+                    end_start=str(end_start),period_range=period_values[0],
+                    range_limits=period_values[1]) if period_values else None
+                
+    def _org_sql_fucntion_filling(self,label,names,tree_pruning):
+        return QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
+                                                           self._tree_depth,self._aggregation_level,
+                                                           label=label,names=names,
+                                                         tree_pruning=tree_pruning)
+    def _org_path_filling(self,organisation_uids_to_filter):
+        return QueryTools.uids_join_filter_formatting(
+                organisation_uids_to_filter,overwrite_type='path',exact_like='like'
+                ) if organisation_uids_to_filter else None
+                
     def get_organisationLevel_labels(self):
         level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
         level_Labels.loc[:,'name']=level_Labels.name.str.lower().str.replace('[ ()]+', ' ',
@@ -88,11 +94,11 @@ class Coverage:
             ))
         
         
-    def extract_data_short(self, de_ids):
+    def extract_data_short(self, de_ids,exact_like='like'):
         
         return self.hook.get_pandas_df(get_query("extract_data_short", 
             self._query_common_dict.update({
-                    'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids,exact_like='like'),
+                    'de_ids_conditions': QueryTools.uids_join_filter_formatting(de_ids,exact_like=exact_like),
                     'ou_labeling':QueryTools.orgtree_sql_pruning(self._organisationLevel_dict,
                                                          self._tree_depth,self._aggregation_level,
                                                          label='top',names=self._names,

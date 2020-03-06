@@ -48,6 +48,16 @@ dataset_set_filtered AS(
         JOIN datasetelement ON datasetelement.dataelementid = dataelement.dataelementid
         JOIN dataset_filtered ON dataset_filtered.datasetid = datasetelement.datasetid     
    )
+   
+{% if organisation_uids_to_path_filter %}     
+, 
+organisation_info_filtered AS (
+            SELECT 
+                organisationunitid
+            FROM organisationunit
+            WHERE {{organisation_uids_to_path_filter}}    
+            )
+{% endif %} 
 
 SELECT 
 
@@ -74,7 +84,7 @@ JOIN categoryoptioncombo
   ON datavalue.categoryoptioncomboid = categoryoptioncombo.categoryoptioncomboid
 JOIN dataset_set_filtered ON dataset_set_filtered.dataelement_uid = dataelement.uid
 
-   {% if period_start or period_end %}
+   {% if period_start or period_end or organisation_uids_to_path_filter %}
         WHERE
    {% endif %}
    {% if period_start %}
@@ -86,7 +96,12 @@ JOIN dataset_set_filtered ON dataset_set_filtered.dataelement_uid = dataelement.
    {% if period_end %}
         period_structure.enddate <= '{{period_end}}'
    {% endif %}
-
+   {% if (period_start or period_end) and organisation_uids_to_path_filter %}
+        AND
+   {% endif %}
+   {% if organisation_uids_to_path_filter %} 
+    _orgunitstructure.organisationunitid in (SELECT organisationunitid FROM organisation_info_filtered )
+   {% endif %}
 
 
 GROUP BY 

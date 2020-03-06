@@ -33,6 +33,19 @@ JOIN periodtype
 ON periodtype.periodtypeid = periodtypejoin.periodtypeid
 )
 
+{% if organisation_uids_to_path_filter %}     
+, 
+organisation_info_filtered AS (
+            SELECT 
+                organisationunitid
+            FROM organisationunit
+            WHERE {{organisation_uids_to_path_filter}}    
+            )
+{% endif %} 
+
+
+
+
 SELECT 
 
        AVG(DATE(datavalue.created) - period_structure.enddate) AS timeliness,
@@ -63,6 +76,10 @@ WHERE {{de_ids_conditions}}
    {% if period_end %}
     and period_structure.enddate <= '{{period_end}}'
    {% endif %}
+   
+{% if organisation_uids_to_path_filter %} 
+    AND _orgunitstructure.organisationunitid in (SELECT organisationunitid FROM organisation_info_filtered )
+{% endif %}
 
 
 
