@@ -249,8 +249,8 @@ class Dhis2(object):
                   if_exists='append', chunksize=100)
         raw.close()
         return self.hook.get_pandas_df("select * from "+table_name)
-
-    def get_geodataframe(self,geometry_type=None,level=None,crs={'init':'epsg:4326'}):
+    @staticmethod
+    def geodata_sql_maker(geometry_type=None):
         sql="SELECT uid as id, path, coordinates, name as organisationunitname from organisationunit"
         if geometry_type == "point":
             sql=sql+" WHERE coordinates LIKE '[%' and coordinates NOT LIKE '[[%' "
@@ -260,12 +260,16 @@ class Dhis2(object):
             pass
         else:
             raise Exception("unsupported geometry type")
-        df = self.hook.get_pandas_df(sql)
+        return sql
+    
+    def get_geodataframe(self,geometry_type=None,level=None,crs={'init':'epsg:4326'}):
+
+        df = self.hook.get_pandas_df(Dhis2.geodata_sql_maker(geometry_type))
         df["level"] = df.path.apply(lambda x: x.count('/'))
         if level:
             df=df.query('level == '+str(level))
             if df.empty:
-                raise ValueError('The level chosen does not have that type of coordinates associated')
+                raise ValueError('The chosen level does not have that type of coordinates associated')
         geometrify_df(df)
         print(df)
         gdf = geopandas.GeoDataFrame(df,crs=crs)
