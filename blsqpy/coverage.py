@@ -24,7 +24,7 @@ class Coverage:
         self.s3ExportsHook = None
         self.conn_id = None
         self.bucket = None
-        self._organisationLevel_dict=self.get_organisationLevel_labels()
+        self._organisationLevel_dict=self._get_organisationLevel_labels()
         self._tree_depth=len(self._organisationLevel_dict)
         self._period_start=self._period_sql_fucntion_filling(
                 end_start='startdate',period_values=period_start)
@@ -62,14 +62,40 @@ class Coverage:
         return QueryTools.uids_join_filter_formatting(
                 organisation_uids_to_filter,overwrite_type='path',exact_like='like'
                 ) if organisation_uids_to_filter else None
-                
-    def get_organisationLevel_labels(self):
+    
+    @staticmethod        
+    def _get_organisationLevel_labels():
         level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
         level_Labels.loc[:,'name']=level_Labels.name.str.lower().str.replace('[ ()]+', ' ',
                         regex=True).str.strip().str.replace('[ ()]+', '_', regex=True)
         return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict()  
     
+    
+    
 
+    def orgtree_sql_prunning_parser(self,label,names,tree_pruning):
+        
+        text_type_naming={True:['_orgunitstructure.namelevel','_name'],
+                          False:['_orgunitstructure.uidlevel','_uid']}
+        
+        iteration_tree =[self._aggregation_level] if tree_pruning else [x for x in range(self._aggregation_level,self._tree_depth+1)] 
+        text_org_structure=[text_type_naming[names][0]+str(x) for x in iteration_tree]
+        
+        if label:
+            text_org_labeling=[' AS '+str(self._organisationLevel_dict[x])+text_type_naming[names][1] for x in iteration_tree]
+            return [oug_stucture + oug_label for oug_stucture, oug_label in zip(text_org_structure, text_org_labeling)] 
+        else:
+            return text_org_structure
+
+    def orgtree_sql_pruning(self,label,names,tree_pruning):
+        
+        org_query_list=self.orgtree_sql_prunning_parser(label,names,tree_pruning)       
+        if label =='top':
+            top_tree='_orgunitstructure.namelevel'+str(self._aggregation_level)+' AS '+str(self._organisationLevel_dict[self._aggregation_level])+'_name'
+            org_query_list=self.orgtree_sql_prunning_parser(label=True,names=False,tree_pruning=False)
+            org_query_list=top_tree.extend(org_query_list[1:])     
+            return ','.join(org_query_list) 
+ 
     def timeliness(self, target_ids, ids_type='dataset',averaged=False):
         
         

@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 import functools
 QUERIES_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -53,33 +54,8 @@ class QueryTools:
                              info_ids)))
         else:
             return None
-    
+        
 
-    @staticmethod
-    def orgtree_sql_pruning(organisationLevel_dict,tree_depth,aggregation_level=1,
-                            label=False,names=False,tree_pruning=False):
-        
-        
-        if label =='top':
-            iteration_tree =[aggregation_level] if tree_pruning else [x for x in range(aggregation_level+1,tree_depth+1)] 
- 
-            top_tree='_orgunitstructure.namelevel'+str(aggregation_level)+' AS '+str(organisationLevel_dict[aggregation_level])+'_name,'
-           
-            top_tree=top_tree+ ','.join(['_orgunitstructure.uidlevel'+str(x)+' AS '+str(organisationLevel_dict[x])+'_uid' for
-                              x in iteration_tree])
-            
-            return top_tree
-        else:
-            
-            iteration_tree =[aggregation_level] if tree_pruning else [x for x in range(aggregation_level,tree_depth+1)] 
-            return ','.join(['_orgunitstructure.namelevel'+str(x)+' AS '+str(organisationLevel_dict[x])+'_name'
-                                 if (label and names) else 
-                            '_orgunitstructure.uidlevel'+str(x)+' AS '+str(organisationLevel_dict[x])+'_uid'
-                                 if label else 
-                            '_orgunitstructure.namelevel'+str(x)
-                                 if names else 
-                            '_orgunitstructure.uidlevel'+str(x) for
-                              x in iteration_tree]) 
           
     @staticmethod
     def period_range_to_sql(end_start,period_range,range_limits='include'):
