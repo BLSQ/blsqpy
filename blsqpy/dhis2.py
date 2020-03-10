@@ -73,57 +73,6 @@ class Dhis2(object):
     def create_blsq_orgunits(self):
         self.to_pg_table(self.orgunitstructure, "blsq_orgunitstructure")
 
-    def get_coverage_de(self, data_element_uid, aggregation_level=3,
-                        orgunitstructure_table="blsq_orgunitstructure",
-                        org_unit_path_starts_with="/",
-                        period_start=None, period_end=None):
-        return self.hook.get_pandas_df(get_query("coverage_for_de", {
-            'data_element_uid': data_element_uid,
-            'orgunitstructure_table': orgunitstructure_table,
-            'aggregation_level': aggregation_level,
-            'org_unit_path_starts_with': org_unit_path_starts_with,
-            'period_start': period_start,
-            'period_end': period_end
-        }))
-
-    def get_coverage_dataset(self, dataset_uid, aggregation_level=3,
-                             orgunitstructure_table="blsq_orgunitstructure",
-                             org_unit_path_starts_with="/",
-                             period_start=None, period_end=None):
-        return self.hook.get_pandas_df(get_query("coverage_for_dataset", {
-            'dataset_uid': dataset_uid,
-            'orgunitstructure_table': orgunitstructure_table,
-            'aggregation_level': aggregation_level,
-            'org_unit_path_starts_with': org_unit_path_starts_with,
-            'period_start': period_start,
-            'period_end': period_end
-        }))
-
-    def get_coverage_de_coc(self, aggregation_level=3, data_element_uids=None,
-                            orgunitstructure_table="blsq_orgunitstructure",
-                            org_unit_path_starts_with="/",
-                            period_start=None, period_end=None):
-
-        # TODO : allow tailored reported values extraction
-        """Get the amount of data reported for each data elements, aggregated at Level 3 level."""
-        data_elements = " , ".join(
-            list(map(lambda x: "'"+x+"'", data_element_uids)))
-        data_element_selector = "select dataelement.dataelementid from dataelement where dataelement.uid in (" + \
-            data_elements+")"
-
-        sql = get_query("coverage_for_de_coc", {
-            'data_element_selector': data_element_selector,
-            'orgunitstructure_table': orgunitstructure_table,
-            'aggregation_level': aggregation_level,
-            'org_unit_path_starts_with': org_unit_path_starts_with,
-            'period_start': period_start,
-            'period_end': period_end
-        })
-
-        reported_de = self.hook.get_pandas_df(sql)
-        reported_de = Periods.add_period_columns(reported_de)
-        return reported_de
-
     def get_data_set_organisation_units(self, dataset_uid):
         sql = [
             "select dataset.uid as dataset_uid,"
@@ -250,7 +199,7 @@ class Dhis2(object):
         raw.close()
         return self.hook.get_pandas_df("select * from "+table_name)
     @staticmethod
-    def geodata_sql_maker(geometry_type=None):
+    def _geodata_sql_maker(geometry_type=None):
         sql="SELECT uid as id, path, coordinates, name as organisationunitname from organisationunit"
         if geometry_type == "point":
             sql=sql+" WHERE coordinates LIKE '[%' and coordinates NOT LIKE '[[%' "
@@ -264,7 +213,7 @@ class Dhis2(object):
     
     def get_geodataframe(self,geometry_type=None,level=None,crs={'init':'epsg:4326'}):
 
-        df = self.hook.get_pandas_df(Dhis2.geodata_sql_maker(geometry_type))
+        df = self.hook.get_pandas_df(Dhis2._geodata_sql_maker(geometry_type))
         df["level"] = df.path.apply(lambda x: x.count('/'))
         if level:
             df=df.query('level == '+str(level))
