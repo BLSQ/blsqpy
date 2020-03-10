@@ -33,24 +33,25 @@ class QueryTools:
     
     @staticmethod
     def _function_selector_full_formatting(overwrite_type=None,exact_like='exact'):
-        if (exact_like !='exact' or exact_like !='like' ):
-            raise TypeError('Invalid exact_like')
+        if (exact_like !='exact' and exact_like !='like' ):
+            raise TypeError('Invalid exact_like "'+str(exact_like)+'"')
         function_selector_dict={
                 'exact':QueryTools._id_to_sql_condition_exact,
                 'like':QueryTools._id_to_sql_condition_like
         }
         
-        return QueryTools._function_selector_filling(function_selector_dict[str(exact_like)])
+        return QueryTools._function_selector_filling(function_selector_dict[str(exact_like)],overwrite_type=overwrite_type)
     
     @staticmethod
-    def uids_join_filter_formatting(info_ids,overwrite_type=None, join_type='OR',exact_like='exact'):
+    def uids_join_filter_formatting(info_ids,overwrite_type=None, exact_like='exact',join_type='OR'):
     
         if (join_type !='OR' and join_type !='AND'):
             raise TypeError('Invalid join_type')
             
         if info_ids:
             return (" "+str(join_type)+" ").join(
-                    list(map(QueryTools._function_selector_full_formatting(overwrite_type,exact_like),
+                    list(map(QueryTools._function_selector_full_formatting(
+                            overwrite_type=overwrite_type,exact_like=exact_like),
                              info_ids)))
         else:
             return None
