@@ -130,6 +130,18 @@ class Coverage:
                     
         ))
         
+    
+    def extract_data_short_for_de_groups(self, de_group_ids,exact_like='exact'):
+        
+        return self._hook.get_pandas_df(get_query("extract_data_short_de_group",dict( 
+            self._query_common_dict,**{
+                    'degroup_ids_conditions': QueryTools.uids_join_filter_formatting(de_group_ids,exact_like=exact_like),
+                    'ou_labeling':self.orgtree_sql_pruning(label='top',names=self._names,
+                                                         tree_pruning=self._tree_pruning)
+                    }
+            )
+                    
+        ))
 
     def for_data_elements(self, data_element_uids):
         df = self.dhis.get_coverage_de_coc(
