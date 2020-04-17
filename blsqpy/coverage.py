@@ -116,6 +116,16 @@ class Coverage:
             )
             
             ))
+
+    def completeness_for_data_sets_condensed(self, dataset_ids):
+        
+        return self._hook.get_pandas_df(get_query("completeness_for_dataset_condensed",dict(
+            self._query_common_dict,**{
+                    'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
+                    }
+            )
+            
+            ))
         
         
     def extract_data_short(self, de_ids,exact_like='like'):

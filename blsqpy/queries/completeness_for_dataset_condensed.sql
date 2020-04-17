@@ -75,9 +75,9 @@ dataset_structure AS(
             dataset_info.sourceid,
             dataset_info.dataelementid,
 --            dataset_info.datalement_name,
-            dataset_info.dataelement_uid,
+--            dataset_info.dataelement_uid,
             dataset_info.categoryoptioncomboid,
-            dataset_info.categoryoptioncombo_name,
+--            dataset_info.categoryoptioncombo_name,
             period_info_filtered.periodid,
 --            period_info_filtered.frequency,
             period_info_filtered.iso
@@ -94,8 +94,8 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
         SELECT
             dataset_structure.dataset_uid,
 --            dataset_structure.sourceid,
-            dataset_structure.dataelement_uid,
-            dataset_structure.categoryoptioncombo_name,
+--            dataset_structure.dataelement_uid,
+--            dataset_structure.categoryoptioncombo_name,
 --            dataset_structure.periodid,
             dataset_structure.iso,
             COUNT (*) AS values_expected,
@@ -115,8 +115,8 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
         GROUP BY
             dataset_structure.dataset_uid,
 --            dataset_structure.sourceid,
-            dataset_structure.dataelement_uid,
-            dataset_structure.categoryoptioncombo_name,
+--            dataset_structure.dataelement_uid,
+--            dataset_structure.categoryoptioncombo_name,
 --            dataset_structure.periodid,
             dataset_structure.iso,
             _orgunitstructure.organisationunituid
