@@ -27,6 +27,31 @@ period_structure AS(
    {% endif %}
 ),
 
+
+
+
+{% if oug_uid_conditions %} 
+org_unit_group AS(      
+    SELECT  orgunitgroup.uid AS oug_uid,
+            organisationunitid
+    FROM orgunitgroup
+    JOIN orgunitgroupmembers 
+    ON orgunitgroup.orgunitgroupid = orgunitgroupmembers.orgunitgroupid 
+    WHERE {{oug_uid_conditions}}
+),
+{% endif %}
+
+{% if deg_uid_conditions %} 
+de_group AS(      
+    SELECT  dataelementgroup.uid AS deg_uid,
+            dataelementid
+    FROM dataelementgroup
+    JOIN dataelementgroupmembers 
+    ON dataelementgroup.dataelementgroupid = dataelementgroupmembers.dataelementgroupid 
+    WHERE {{deg_uid_conditions}}
+),
+{% endif %}
+
 dataset_info AS(
         SELECT 
 --            dataset_reduced.name AS dataset_name,
@@ -37,7 +62,7 @@ dataset_info AS(
             dataelement.uid AS dataelement_uid,
             dataelement.name AS datalement_name,
             categoryoptioncombo.categoryoptioncomboid,
-            categoryoptioncombo.name AS categoryoptioncombo_name
+            categoryoptioncombo.uid AS categoryoptioncombo_uid
                 
     FROM dataset_reduced
     JOIN datasetsource ON datasetsource.datasetid = dataset_reduced.datasetid
@@ -77,13 +102,27 @@ dataset_structure AS(
 --            dataset_info.datalement_name,
             dataset_info.dataelement_uid,
             dataset_info.categoryoptioncomboid,
-            dataset_info.categoryoptioncombo_name,
+            dataset_info.categoryoptioncombo_uid,
             period_info_filtered.periodid,
+            {% if deg_uid_conditions %} 
+                de_group.deg_uid,
+            {% endif %}
+            {% if oug_uid_conditions %} 
+                org_unit_group.oug_uid,
+            {% endif %}
 --            period_info_filtered.frequency,
             period_info_filtered.iso
 FROM dataset_info
 JOIN period_info_filtered
-ON dataset_info.periodtypeid = period_info_filtered.periodtypeid  
+ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
+
+{% if deg_uid_conditions %} 
+    JOIN de_group ON dataset_info.dataelementid = de_group.dataelementid
+{% endif %}
+
+{% if oug_uid_conditions %} 
+    JOIN org_unit_group ON dataset_info.sourceid = org_unit_group.organisationunitid
+{% endif %}
 
 {% if organisation_uids_to_path_filter %} 
     WHERE dataset_info.sourceid in (SELECT organisationunitid FROM organisation_info_filtered )
@@ -95,8 +134,18 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
             dataset_structure.dataset_uid,
 --            dataset_structure.sourceid,
             dataset_structure.dataelement_uid,
-            dataset_structure.categoryoptioncombo_name,
+            {% if coc_disagg %}
+            dataset_structure.categoryoptioncombo_uid,
+            {% endif %}
 --            dataset_structure.periodid,
+
+            {% if deg_uid_conditions %} 
+                dataset_structure.deg_uid,
+            {% endif %}
+            {% if oug_uid_conditions %} 
+                dataset_structure.oug_uid,
+            {% endif %}
+            
             dataset_structure.iso,
             COUNT (*) AS values_expected,
             COUNT(datavalue.value) AS values_reported,
@@ -116,7 +165,18 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
             dataset_structure.dataset_uid,
 --            dataset_structure.sourceid,
             dataset_structure.dataelement_uid,
-            dataset_structure.categoryoptioncombo_name,
+            {% if coc_disagg %}
+            dataset_structure.categoryoptioncombo_uid,
+            {% endif %}
 --            dataset_structure.periodid,
+
+            {% if deg_uid_conditions %} 
+                dataset_structure.deg_uid,
+            {% endif %}
+            {% if oug_uid_conditions %} 
+                dataset_structure.oug_uid,
+            {% endif %}
+
+
             dataset_structure.iso,
             _orgunitstructure.organisationunituid
