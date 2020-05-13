@@ -10,6 +10,9 @@ def get_query(query_name, params):
     return j2_env.get_template(query_name+'.sql').render(**params)+"\n -- query : "+query_name
 
 class QueryTools:
+    """
+    Series of functions to transform parameters into sql queries.
+    """
     
     @staticmethod
     def _id_to_sql_condition_exact(info_id,info_type='uid'):

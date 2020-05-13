@@ -1,5 +1,6 @@
-import os
 from .query import get_query,QueryTools
+import nump as np
+import pandas as pd
 
 class Coverage:
 
@@ -79,8 +80,14 @@ class Coverage:
     extract_data_short_for_de_groups(self, de_group_ids,exact_like='exact'):
         Given a series of DEG UID(s) or name(s) it returns a DataFrame with their dataelement raw values registered
         during the time boundaries of the coverage object.No frequency restriction is applied however.        
-        
+    
+    availability_on_group_conditioned(df, deg_threshold_dict):
+        Given a dictionary of DEG UID(s):#DE(s) threshold to be filled per DEG
+        it returns a DataFrame with DEG availability calculated.
 
+    coherence_conditioned(df,coherence_relations_dict,fillnan_value=0)
+        Given a dictionary of coherence relations among elements
+        it returns a DataFrame with their coherence calculated.
     __________________________________________________________________________
     __________________________________________________________________________
     
@@ -423,3 +430,91 @@ class Coverage:
                     
         ))
     
+    @staticmethod
+    def availability_on_group_conditioned(df, deg_threshold_dict):
+        """
+        Given a dictionary of DEG UID(s):#DE(s) threshold to be filled per DEG
+        it returns a DataFrame with DEG availability calculated.
+        
+        Parameters:
+        
+                    df: DataFrame
+                        It assumes it's formatted as extracted from completeness.
+                        
+                    deg_threshold_dict: dict
+                        A dictionary with its elements  in the format:
+                        {...,DEG UID: integer of DE needed to be filled,...}
+                        
+        Returns:
+                DataFrame
+        """
+        deg_threshold_df=pd.DataFrame(deg_threshold_dict,orient='index',
+                                      columns=['deg_values_expected'])
+        
+        colExclude=['categoryoptioncombo_uid','values_expected','values_reported']
+        
+        df_grouped=df.groupby([x for x in df.columns if x not in  colExclude]).sum()
+        df_grouped['de_availability']=df_grouped.values_reported/df_grouped.values_expected
+        df_grouped['de_availability']=df_grouped['de_availability'].apply(lambda x: np.ceil(x))
+        df_grouped=df_grouped.reset_index().drop(colExclude,axis=1)
+        
+        df_grouped=df.groupby([x for x in df.columns if x not in ['dataelement_uid','de_availability'] ]).sum()
+        df_grouped=df_grouped.reset_index().drop('dataelement_uid',axis=1)
+        
+        df_grouped=df_grouped.merge(deg_threshold_df,left_on='deg_uid',right_index=True)
+        df_grouped['availability']=df_grouped.de_availability/df_grouped.deg_values_expected
+        df_grouped['availability']=df_grouped['availability'].apply(lambda x: np.ceil(x))
+        return df_grouped
+    @staticmethod
+    def coherence_conditioned(df,coherence_relations_dict,fillnan_value=0):
+        
+        """
+        Given a dictionary of coherence relations among elements
+        it returns a DataFrame with their coherence calculated.
+        
+        Parameters:
+        
+                    df: DataFrame
+                        It assumes data elements are columns.
+                        
+                    deg_threshold_dict: dict
+                        A dictionary with its elements  in the format:
+                        {...,coherence_label: [[DE1 column name,DE2colname],expected relationship of DE1 to DE2],...}
+                        Relationship valid options are:
+                            'emore':'>=',
+                            'eless':'<=',
+                            'more':'>','
+                            less':'<'
+                            
+                    fillnan_value:float or int or str; 0
+                        if None it executes comparison as the df exists,
+                        sometimes this can lead to complications when nan
+                        values are present.
+                        
+                        Otherwise it fills nan values with the quantity indicated
+                        by default is 0.
+                            
+        Returns:
+                DataFrame
+        """
+        
+        valid_relationship_types_dict={'emore':'>=','eless':'<=','more':'>','less':'<'}
+
+        def column_coherence_check(df,col_left,col_right,col_label,rel_type='eless'):            
+            
+            if rel_type in valid_relationship_types_dict.keys():
+                
+                if fillnan_value:
+                    df_usable=df.fillna(fillnan_value)
+                else:
+                    df_usable=df.copy()
+                col_comp=df_usable.eval('`'+str(col_left)+'` '+valid_relationship_types_dict(rel_type)+ ' `'+str(col_right) +'`')
+                df[col_label]=col_comp.astype(int)
+            
+            else:
+                raise Exception("invalid relationship type")
+        
+        for coherence_label,relationship in coherence_relations_dict.items():
+            column_coherence_check(df,relationship[0][0],relationship[0][1],coherence_label,relationship[1])
+        
+        return df

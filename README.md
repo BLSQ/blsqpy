@@ -103,7 +103,7 @@ host=server.com
 port=5432
 dbname=dbname
 ```
-## DHIS2 Metada Information
+## DHIS2 Metadata Information
 
 Modules **dhis2** and **dhis2_client** are the ones used for obtaining metada from our 
 system. First one is built upon the hooks we have created previously, while in
