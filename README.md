@@ -52,11 +52,11 @@ Package is structured with the idea of encapsulate each step of the data analysi
 within a module, with addtional support ones.
 
 
-##Connections
+## Connections
 
 Access to data can happen through database(DB),AWS S3 or DHIS2 API
 
-So the first part related to connectors is delegated to *PostgresHook* and *S3ExportsHook*
+So the first part related to connectors is delegated to **PostgresHook** and **S3ExportsHook**
 both object use the credential files stored locally to generate future connectors
 for the SQL/S3 queries.
 
@@ -103,9 +103,9 @@ host=server.com
 port=5432
 dbname=dbname
 ```
-##DHIS2 Metada Information
+## DHIS2 Metada Information
 
-Modules *dhis2* and *dhis2_client* are the ones used for obtaining metada from our 
+Modules **dhis2** and **dhis2_client** are the ones used for obtaining metada from our 
 system. First one is built upon the hooks we have created previously, while in
 the second case, it connects directly to DHIS2 API.
 
@@ -134,16 +134,16 @@ Additionally it contains a series of functions to obtain more detailed
 information on user indicated datasets, or data element/orgunit structures.
 
 It also contains the functions to extract geographical information (GEOJSON) 
-from the system ( it uses functiosn from the module *geometry*)
+from the system ( it uses functions from the module **geometry**)
 
 (Note: for dhis_client is a part still on progress as long as its use has been
 limited so far)
 
-##DHIS2 Data Extraction
+## DHIS2 Data Extraction
 
 Note:So far we only developed this for DB connections.
 
-The module reponsilbe is *coverage*. To generate it's object we feed it the 
+The module responsible is **coverage**. To generate it's object we feed it the 
 previously generated dhis2.
 
 Each coverage object is thought as a framework of conditions to extraction:
@@ -152,17 +152,17 @@ or in time, its easier to declare them once as general attributes for all the ex
 processes.
 
 All extraction processes use previously created SQL queries templates . These 
-templates are saved in the "queries" subfolder and with "jinja2" package
+templates are saved in the **/queries** subfolder and with *"jinja2"* package
 what the scripts do is feed the empty spaces with the details of each call.
 Jinja syntaxis allows not only filling details but also conditional declaration 
 of parts of the query.
 
-All the functions used to transform the parameters givne in this module to SQL
-language are stored in in the *query* module, is most cases as static methods.
+All the functions used to transform the parameters given in this module to SQL
+language are stored in in the **query** module, is most cases as static methods.
 
-##DHIS2 Data Processing
+## DHIS2 Data Processing
 
-Functiosn for further working on the results are stored in the *data_process* 
+Functiosn for further working on the results are stored in the **data_process** 
 module. However, a coming soon restructuration will review this part of the
 package too.
 

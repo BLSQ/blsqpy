@@ -1,17 +1,8 @@
 """Read a DHIS database and prepare its content for analysis."""
-
 import pandas as pd
 import geopandas 
-import psycopg2 as pypg
-from datetime import datetime
 from .geometry import geometrify_df 
-
-from .periods import Periods
 from .levels import Levels
-from .query import get_query,QueryTools
-
-from io import StringIO
-
 
 class Dhis2(object):
     """
@@ -75,6 +66,21 @@ class Dhis2(object):
     ----------
     _categorycombos_optioncombos: DataFrame
         Used for building the DE+COC table
+        
+    _organisationLevel_dict: dictionary
+        A dictionary containing the names for each level of the health pyramid
+    _tree_depth: int
+        Size of the health pyramid tree in order to know its limit when querying
+        
+        
+    Methods (Internal)
+    ----------
+    _get_organisationLevel_labels(self):
+        SQL query to get names of OU levels on the health pyramid
+        
+    _merger_handler(df,column_labeling_dict)
+        Support function for the uid labeling
+    
     """
 
     def __init__(self, hook):
@@ -107,6 +113,11 @@ class Dhis2(object):
                 "SELECT uid as organisationunituid, path, name as organisationunitname, contactPerson, closedDate, phoneNumber from organisationunit;"),
             start=1, end_offset=2, with_level=True
         )
+        
+        self._organisationLevel_dict=self._get_organisationLevel_labels()
+        self._tree_depth=len(self._organisationLevel_dict)
+        
+        
         # TODO : should find a way to store the data access info securely
         # so we don't have to keep attributes we only use for very
         # specific usages (ex: categoryoptioncombo)
@@ -251,32 +262,25 @@ class Dhis2(object):
         Returns:
                 DataFrame
         """
-        def df_merger (df_left,df_right,right_col,left_col='uid',keep='no'):
-            df=df_left.merge(df_right,left_on=left_col,right_on=right_col)
-            if left_col!=right_col:
-                if keep=='original':
-                    df=df.drop([left_col],axis=1)
-                if keep=='new':
-                    df=df.drop([right_col],axis=1)
-            elif keep=='no':       
-                df=df.drop([left_col,right_col],axis=1)
-            return df
-    
-        if orgunit_col:
-            org_tree=self._dhis.organisation_units_structure()
-            org_tree=org_tree[['organisationunituid','level','namelevel2','namelevel3','uidlevel3','namelevel4','namelevel5']]
-            org_tree=org_tree.rename(columns={'namelevel2':'Province','namelevel3':'Zone de Santé','uidlevel3':'ZS UID','namelevel4':'Aire de Santé','namelevel5':'FOSA'})
-            df=df_merger(org_tree,df,right_col=orgunit_col,left_col='organisationunituid',keep='original')
-        if oug_col:
-            df=df_merger(self._dhis.orgunitgroup[['uid','name']].rename(columns={'name':'oug'}),df,right_col=oug_col)      
-        if deg_col:
-            df=df_merger(self._dhis.dataelementgroup[['uid','name']].rename(columns={'name':'deg'}),df,right_col=deg_col)      
-        if coc_col:
-            df=df_merger(self._dhis.categoryoptioncombo[['uid','name']].rename(columns={'name':'coc'}),df,right_col=coc_col)   
-        if datel_col:
-            df=df_merger(self._dhis.dataelement[['uid','name']].rename(columns={'name':'dataelement'}),df,right_col=datel_col)   
-        if dataset_col:
-            df=df_merger(self._dhis.dataset[['uid','name']].rename(columns={'name':'dataset'}),df,right_col=dataset_col)   
+
+        renaming_dict={'namelevel'+key:self._organisationLevel_dict[key] for key in self._organisationLevel_dict.keys()}
+        
+        org_tree=self.orgunitstructure
+        org_tree=org_tree[['organisationunituid','level','namelevel2','namelevel3','uidlevel3','namelevel4','namelevel5']]
+        org_tree=org_tree.rename(columns=renaming_dict)
+        
+        column_labeling_dict={
+                              'orgunit':[org_tree,orgunit_col],
+                              'oug':[self.orgunitgroup,oug_col],
+                              'deg':[self.dataelementgroup,deg_col],
+                              'coc':[self.categoryoptioncombo,coc_col],
+                              'dataelement':[self.dataelement,datel_col],
+                              'dataset':[self.dataset,dataset_col]
+                              }
+        
+        
+        df=Dhis2._merger_handler(df,column_labeling_dict)
+                
         return df
 
 
@@ -307,74 +311,32 @@ class Dhis2(object):
         gdf = geopandas.GeoDataFrame(df,crs=crs)
         return gdf
     
+#------------Internal Methods
+        
     
-#-----------------------------------Legacy Code TBR----------------------------
+    def _get_organisationLevel_labels(self):
+        level_Labels=self.hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
+        level_Labels.loc[:,'name']=level_Labels.name.str.lower().str.replace('[ ()]+', ' ',
+                        regex=True).str.strip().str.replace('[ ()]+', '_', regex=True)
+        return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict()
+    
+    @staticmethod
+    def _merger_handler(df,column_labeling_dict):
         
-
-
-    def label_org_unit_structure(self):
-        """Label the Organisation Units Structure table."""
-        variables = self.orgunitstructure.columns
-        uids = [x for x in variables if x.startswith('uid')]
-        tomerge = self.organisationunit[['uid', 'name']]
-        self.orgunitstructure = self.orgunitstructure.merge(tomerge,
-                                                            left_on='organisationunituid',
-                                                            right_on='uid')
-        for uid in uids:
-            tomerge.columns = ['uid', 'namelevel'+uid[-1]]
-    # works as long as structure is less than 10 depth. update to regex ?
-            self.orgunitstructure = self.orgunitstructure.merge(tomerge,
-                                                                how='left',
-                                                                left_on=uid,
-                                                                right_on='uid')
-        self.orgunitstructure = self.orgunitstructure[[
-            'organisationunituid', 'level'] + uids + ['namelevel'+x[-1] for x in uids]]
+        def df_merger (df_left,df_right,right_col,left_col='uid',keep='no'):
+            df=df_left.merge(df_right,left_on=left_col,right_on=right_col)
+            if left_col!=right_col:
+                if keep=='original':
+                    df=df.drop([left_col],axis=1)
+                if keep=='new':
+                    df=df.drop([right_col],axis=1)
+            elif keep=='no':       
+                df=df.drop([left_col,right_col],axis=1)
+            return df
         
-    def create_blsq_orgunits(self):
-        self.to_pg_table(self.orgunitstructure, "blsq_orgunitstructure")
-
-    def get_data(self, de_ids, org_unit_path_starts_with="/", period_start=None, period_end=None):
-        # TODO : allow tailored reported values extraction
-        """Extract data reported for each data elements."""
-        print("fetching data values from",
-              getattr(self.hook, self.hook.conn_name_attr), "for", ",".join(de_ids))
-
-        de_ids_condition = QueryTools.uids_join_filter_formatting(de_ids)
-
-        sql = get_query("extract_data", {
-            'de_ids_conditions': de_ids_condition,
-            'org_unit_path_starts_with': org_unit_path_starts_with,
-            'period_start': period_start,
-            'period_end': period_end
-        })
-        print("get_data > start", datetime.now())
-        df = self.hook.get_pandas_df(sql)
-        print("get_data > executed", datetime.now())
-        df = Periods.add_period_columns(df)
-        print("get_data > periods", datetime.now())
-        df = Levels.add_uid_levels_columns_from_path_column(df)
-        print("get_data > levels", datetime.now())
-
+        for key in column_labeling_dict.keys():
+            if column_labeling_dict[key][1]!=None and key!='orgunit':
+                df=df_merger(column_labeling_dict[key][0][['uid','name']].rename(columns={'name':key}),df,right_col=column_labeling_dict[key][1])
+            elif column_labeling_dict[key][1]!=None and key=='orgunit':
+                df=df_merger(column_labeling_dict[key][0],df,right_col=column_labeling_dict[key][1],left_col='organisationunituid',keep='original')
         return df
-    def to_pg_table(self, df, table_name):
-        print("connection")
-        con = self.hook.get_sqlalchemy_engine()
-        print("connection acquired")
-        data = StringIO()
-        df.to_csv(data, header=False, index=False)
-        data.seek(0)
-        print("data to stringio done")
-        raw = con.raw_connection()
-        raw.autocommit = False
-        print("raw connection")
-        curs = raw.cursor()
-        print("cursor")
-        curs.execute("DROP TABLE IF EXISTS " + table_name)
-        curs.close()
-        raw.commit()
-        print(table_name+" dropped")
-        df.to_sql(table_name,  index=False, con=con,
-                  if_exists='append', chunksize=100)
-        raw.close()
-        return self.hook.get_pandas_df("select * from "+table_name)
-    

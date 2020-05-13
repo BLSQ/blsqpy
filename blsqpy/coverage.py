@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 from .query import get_query,QueryTools
 
 class Coverage:
@@ -94,9 +93,9 @@ class Coverage:
     _names:as parameter
     _tree_pruning:as parameter
     
-    _organisationLevel_dict: Dictionary
+    _organisationLevel_dict: dictionary
         A dictionary containing the names for each level of the health pyramid
-    _tree_depth: Int
+    _tree_depth: int
         Size of the health pyramid tree in order to know its limit when querying
         
     _period_start,_period_end:String
@@ -157,8 +156,8 @@ class Coverage:
         self._aggregation_level = aggregation_level
         self._names=names
         self._tree_pruning=tree_pruning
-        self._organisationLevel_dict=self._get_organisationLevel_labels()
-        self._tree_depth=len(self._organisationLevel_dict)
+        self._organisationLevel_dict=dhis._organisationLevel_dict
+        self._tree_depth=dhis._tree_depth
         self._period_start=self._period_sql_function_filling(
                 end_start='startdate',period_values=period_start)
         self._period_end=self._period_sql_function_filling(
@@ -194,12 +193,6 @@ class Coverage:
         return QueryTools.uids_join_filter_formatting(
                 organisation_uids_to_filter,overwrite_type='path',exact_like='like'
                 ) if organisation_uids_to_filter else None
-            
-    def _get_organisationLevel_labels(self):
-        level_Labels=self._hook.get_pandas_df('SELECT level,name FROM orgunitlevel;')
-        level_Labels.loc[:,'name']=level_Labels.name.str.lower().str.replace('[ ()]+', ' ',
-                        regex=True).str.strip().str.replace('[ ()]+', '_', regex=True)
-        return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict() 
     
     def _level_to_group_completeness(self,level_to_group):
          if level_to_group =='as_dataset':
@@ -430,79 +423,3 @@ class Coverage:
                     
         ))
     
-    
-    
-    
-    #-------------------------Legacy Code to be reviewed----------------------
-
-    def for_data_elements(self, data_element_uids):
-        df = self.dhis.get_coverage_de_coc(
-            aggregation_level=self._aggregation_level,
-            data_element_uids=data_element_uids,
-            orgunitstructure_table=self.orgunitstructure_table
-        )
-        facility_level_count_column = 'level_count'
-
-        df_ou = self.dhis.organisation_units_structure()
-        df_ou = df_ou.query("level == "+str(self.facility_level)).groupby(
-            [self.aggregation_level_uid_column]).size().reset_index(name=facility_level_count_column)
-
-        coverage_df = df.merge(df_ou, on=self.aggregation_level_uid_column)
-        coverage_df["values_coverage_ratio"] = coverage_df["values_count"] / \
-            coverage_df[facility_level_count_column]
-        return coverage_df
-
-    def for_data_set_organisation_units(self, dataset_id):
-        data_set_organisation_units = self.dhis.get_data_set_organisation_units(
-            dataset_id)
-        # exclude keep only orgunit with level x and group by
-        facility_level_column = "uidlevel"+str(self.facility_level)
-        data_set_orgunits = data_set_organisation_units.query(facility_level_column+" == "+facility_level_column).groupby(
-            [self.aggregation_level_uid_column]).size().reset_index(name='data_set_count')
-        return data_set_orgunits
-
-    def get(self, dataset_id):
-        data_set_orgunits = self.for_data_set_organisation_units(dataset_id)
-        data_element_uids = self.dhis.get_data_set_data_elements(
-            dataset_id).data_element_uid.values
-        dataset = self.for_data_elements(data_element_uids)
-        dataset = dataset.merge(
-            data_set_orgunits, on=self.aggregation_level_uid_column)
-        dataset["dataset_coverage_ratio"] = dataset["values_count"] / \
-            dataset["data_set_count"]
-
-        return dataset
-
-    def get_per_de(self, dataset_id):
-        data_set_orgunits = self.for_data_set_organisation_units(dataset_id)
-        data_element_uids = self.dhis.get_data_set_data_elements(
-            dataset_id).data_element_uid.values
-
-        from itertools import zip_longest as izip_longest
-
-        def each_slice(iterable, n, fillvalue=None):
-            args = [iter(iterable)] * n
-            return izip_longest(fillvalue=fillvalue, *args)
-
-        for data_element_sliced_uids in each_slice(data_element_uids, 1):
-            dataset = self.for_data_elements(data_element_sliced_uids)
-            dataset = dataset.merge(
-                data_set_orgunits, on=self.aggregation_level_uid_column)
-            dataset["dataset_coverage_ratio"] = dataset["values_count"] / \
-                dataset["data_set_count"]
-            name = '-'.join(data_element_sliced_uids)
-            conn_id = self.conn_id
-            local_file = 'coverage_'+conn_id+'_'+dataset_id+"_"+name
-            directory = './export/'+conn_id
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-
-            dataset.to_csv(directory+"/"+local_file, sep=',',
-                           index=False, compression='gzip')
-
-            if self.s3ExportsHook:
-                self.s3ExportsHook.load_file(
-                    directory+"/"+local_file,
-                    'export/'+conn_id+"/"+local_file+".csv",
-                    self.bucket,
-                    replace=True)
