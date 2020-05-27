@@ -110,7 +110,7 @@ class Dhis2(object):
         # by sql on orgunit and computation
         self.orgunitstructure = Levels.add_uid_levels_columns_from_path_column(
             hook.get_pandas_df(
-                "SELECT uid as organisationunituid, path, name as organisationunitname, contactPerson, closedDate, phoneNumber from organisationunit;"),
+                "SELECT uid as organisationunituid, path, name as organisationunitname,organisationunitid, contactPerson, closedDate, phoneNumber from organisationunit;"),
             start=1, end_offset=2, with_level=True
         )
         
@@ -233,7 +233,7 @@ class Dhis2(object):
         return self.orgunitstructure
     
 
-    def uid_labeling(self,df,orgunit_col='organisationunituid',oug_col='oug_uid',deg_col='deg_uid',coc_col='categoryoptioncombo_uid',datel_col='dataelement_uid',dataset_col='dataset_uid'):
+    def uid_labeling(self,df,orgunit_col='organisationunituid',oug_col='oug_uid',deg_col='deg_uid',coc_col='categoryoptioncombo_uid',datel_col='dataelement_uid',dataset_col='dataset_uid',key_identifier='id'):
         """
         Given a Dataframe and a series of column names inside it, it 
         fetches and substitutes the uids found in the DataFrame found for their names
@@ -263,23 +263,23 @@ class Dhis2(object):
                 DataFrame
         """
 
-        renaming_dict={'namelevel'+key:self._organisationLevel_dict[key] for key in self._organisationLevel_dict.keys()}
+        renaming_dict={'namelevel'+str(key):self._organisationLevel_dict[key] for key in self._organisationLevel_dict.keys()}
         
         org_tree=self.orgunitstructure
-        org_tree=org_tree[['organisationunituid','level','namelevel2','namelevel3','uidlevel3','namelevel4','namelevel5']]
+        org_tree=org_tree[['organisationunituid','organisationunitid','level','namelevel2','namelevel3','uidlevel3','namelevel4','namelevel5']]
         org_tree=org_tree.rename(columns=renaming_dict)
         
         column_labeling_dict={
-                              'orgunit':[org_tree,orgunit_col],
-                              'oug':[self.orgunitgroup,oug_col],
-                              'deg':[self.dataelementgroup,deg_col],
-                              'coc':[self.categoryoptioncombo,coc_col],
-                              'dataelement':[self.dataelement,datel_col],
-                              'dataset':[self.dataset,dataset_col]
+                              'orgunit':[org_tree,orgunit_col,'organisationunitid'],
+                              'oug':[self.orgunitgroup,oug_col,'orgunitgroupid'],
+                              'deg':[self.dataelementgroup,deg_col,'dataelementgroupid'],
+                              'coc':[self.categoryoptioncombo,coc_col,'categoryoptioncomboid'],
+                              'dataelement':[self.dataelement,datel_col,'dataelementid'],
+                              'dataset':[self.dataset,dataset_col,'datasetid']
                               }
         
         
-        df=Dhis2._merger_handler(df,column_labeling_dict)
+        df=Dhis2._merger_handler(df,column_labeling_dict,identifier=key_identifier)
                 
         return df
 
@@ -321,7 +321,7 @@ class Dhis2(object):
         return pd.Series(level_Labels.name.values,index=level_Labels.level).to_dict()
     
     @staticmethod
-    def _merger_handler(df,column_labeling_dict):
+    def _merger_handler(df,column_labeling_dict,identifier='id'):
         
         def df_merger (df_left,df_right,right_col,left_col='uid',keep='no'):
             df=df_left.merge(df_right,left_on=left_col,right_on=right_col)
@@ -336,7 +336,9 @@ class Dhis2(object):
         
         for key in column_labeling_dict.keys():
             if column_labeling_dict[key][1]!=None and key!='orgunit':
-                df=df_merger(column_labeling_dict[key][0][['uid','name']].rename(columns={'name':key}),df,right_col=column_labeling_dict[key][1])
+                join_key='uid' if identifier =='uid' else column_labeling_dict[key][2]
+                df=df_merger(column_labeling_dict[key][0].rename(columns={'name':key}),df,right_col=column_labeling_dict[key][1],left_col=join_key)
             elif column_labeling_dict[key][1]!=None and key=='orgunit':
-                df=df_merger(column_labeling_dict[key][0],df,right_col=column_labeling_dict[key][1],left_col='organisationunituid',keep='original')
+                join_key='organisationunituid' if identifier =='uid' else column_labeling_dict[key][2]
+                df=df_merger(column_labeling_dict[key][0],df,right_col=column_labeling_dict[key][1],left_col=join_key,keep='original')
         return df

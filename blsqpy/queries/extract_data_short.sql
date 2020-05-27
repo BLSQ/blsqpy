@@ -19,8 +19,7 @@ WITH period_structure AS(
 ),
 
 dataelement_filtered AS(
-        SELECT name,
-               dataelementid
+        SELECT dataelementid
         FROM dataelement
         WHERE {{de_ids_conditions}}
         
@@ -29,9 +28,8 @@ dataelement_filtered AS(
 SELECT CAST(datavalue.value AS INT) AS value,
        period_structure.period,
        period_structure.enddate AS period_end,
-       dataelement_filtered.name AS data_element_name,
-
-       {{ou_labeling}}
+       dataelement_filtered.dataelementid,
+       _orgunitstructure.organisationunitid
 
 FROM datavalue 
 JOIN dataelement_filtered
