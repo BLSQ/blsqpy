@@ -1,6 +1,7 @@
 from .query import get_query,QueryTools
-import nump as np
+import numpy as np
 import pandas as pd
+import os 
 
 class Coverage:
 
@@ -145,20 +146,23 @@ class Coverage:
                  organisation_uids_to_filter=None,
                  aggregation_level=3,
                  names=False,
-                 tree_pruning=False
+                 tree_pruning=False,
+                 bucket=None,
+                 s3ExportsHook=None
                  ):
         
         #These attributes are legacy ones that need to be considered to be
         #included or erased in a restructuration
         self.orgunitstructure_table = "_orgunitstructure"
-        self.s3ExportsHook = None
-        self.conn_id = None
-        self.bucket = None
+        self._s3ExportsHook = s3ExportsHook
+        
+        self._bucket = bucket
         self.aggregation_level_uid_column = 'uidlevel' + \
-          str(self._aggregation_level)
+          str(aggregation_level)
         
         #Current active attributes
         self._hook=dhis.hook
+        self._conn_id = self._hook.postgres_conn_id
         self._dhis=dhis
         self._aggregation_level = aggregation_level
         self._names=names
@@ -518,3 +522,28 @@ class Coverage:
             column_coherence_check(df,relationship[0][0],relationship[0][1],coherence_label,relationship[1])
         
         return df
+    
+    def file_dumper(self,file,name,bucket='default',s3hook='default',file_formats=['csv']):
+        
+        conn_id = self._conn_id
+        local_file = 'coverage_'+conn_id+'_'+name
+        directory = './exports/'+conn_id
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        if 'csv' in file_formats:
+            file.to_csv(directory+"/"+local_file, sep=',',
+                    index=False, compression='gzip')
+        if 'pkl' in file_formats:
+            file.to_pickle(directory+"/"+local_file+'.pkl')       
+        if s3hook and bucket:
+            if s3hook=='default':
+                s3hook=self._s3ExportsHook
+            if bucket=='default':
+                bucket=self._bucket
+            if 'csv' in file_formats:
+                s3hook.load_file(
+                        directory+"/"+local_file,
+                        'export/'+conn_id+"/"+local_file+".csv",
+                        bucket,
+                        replace=True)
+            
