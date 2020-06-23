@@ -1,8 +1,8 @@
 WITH period_structure AS(      
     SELECT periodid,
             iso AS period,
-            enddate,
-            startdate
+            enddate
+--            startdate
     FROM _periodstructure         
     {% if period_start or period_end %}
         WHERE
@@ -23,23 +23,34 @@ dataelement_filtered AS(
         FROM dataelement
         WHERE {{de_ids_conditions}}
         
+),
+datavalue_restricted AS(
+        SELECT value,
+               dataelementid,
+               periodid,
+               sourceid,
+               categoryoptioncomboid
+        FROM datavalue
 )
 
-SELECT CAST(datavalue.value AS INT) AS value,
+SELECT 
+--        CAST(datavalue_restricted.value AS INT) AS value,
+       datavalue_restricted.value,
        period_structure.period,
        period_structure.enddate AS period_end,
        dataelement_filtered.dataelementid,
-       _orgunitstructure.organisationunitid
+       _orgunitstructure.organisationunitid,
+       datavalue_restricted.categoryoptioncomboid
 
-FROM datavalue 
+FROM datavalue_restricted 
 JOIN dataelement_filtered
-  ON dataelement_filtered.dataelementid = datavalue.dataelementid
+  ON dataelement_filtered.dataelementid = datavalue_restricted.dataelementid
 JOIN period_structure
-  ON datavalue.periodid = period_structure.periodid
+  ON datavalue_restricted.periodid = period_structure.periodid
 JOIN _orgunitstructure
-  ON datavalue.sourceid = _orgunitstructure.organisationunitid
+  ON datavalue_restricted.sourceid = _orgunitstructure.organisationunitid
 JOIN public.categoryoptioncombo
-  ON datavalue.categoryoptioncomboid = categoryoptioncombo.categoryoptioncomboid
+  ON datavalue_restricted.categoryoptioncomboid = categoryoptioncombo.categoryoptioncomboid
     
     
     

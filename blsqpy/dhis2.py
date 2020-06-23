@@ -105,6 +105,8 @@ class Dhis2(object):
             "SELECT dataelementid, dataelementgroupid FROM dataelementgroupmembers;")
         self.orgunitgroup = hook.get_pandas_df(
             "SELECT uid, name, orgunitgroupid  FROM orgunitgroup;")
+        self.periodstructure = hook.get_pandas_df(
+            "SELECT periodid, iso AS period  FROM _periodstructure;")
 
         # replace resources sql "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;")
         # by sql on orgunit and computation
@@ -337,7 +339,7 @@ class Dhis2(object):
         for key in column_labeling_dict.keys():
             if column_labeling_dict[key][1]!=None and key!='orgunit':
                 join_key='uid' if identifier =='uid' else column_labeling_dict[key][2]
-                df=df_merger(column_labeling_dict[key][0].rename(columns={'name':key}),df,right_col=column_labeling_dict[key][1],left_col=join_key)
+                df=df_merger(column_labeling_dict[key][0].rename(columns={'name':key,'uid':key+'_uid'}),df,right_col=column_labeling_dict[key][1],left_col=join_key)
             elif column_labeling_dict[key][1]!=None and key=='orgunit':
                 join_key='organisationunituid' if identifier =='uid' else column_labeling_dict[key][2]
                 df=df_merger(column_labeling_dict[key][0],df,right_col=column_labeling_dict[key][1],left_col=join_key,keep='original')
