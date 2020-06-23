@@ -268,7 +268,7 @@ class Dhis2(object):
         renaming_dict={'namelevel'+str(key):self._organisationLevel_dict[key] for key in self._organisationLevel_dict.keys()}
         
         org_tree=self.orgunitstructure
-        org_tree=org_tree[['organisationunituid','organisationunitid','level','namelevel2','namelevel3','uidlevel3','namelevel4','namelevel5']]
+        org_tree=org_tree[['organisationunituid','organisationunitid','level','uidlevel2','namelevel2','namelevel3','uidlevel3','namelevel4','uidlevel4','namelevel5']]
         org_tree=org_tree.rename(columns=renaming_dict)
         
         column_labeling_dict={
