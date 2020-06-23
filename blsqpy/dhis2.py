@@ -94,7 +94,7 @@ class Dhis2(object):
         self.dataelement.name = self.dataelement.name.str.replace("\n|\r", " ")
         
         self.categoryoptioncombo = hook.get_pandas_df(
-            "SELECT categoryoptioncomboid, name , uid FROM categoryoptioncombo;")
+            "SELECT categoryoptioncombo.categoryoptioncomboid AS categoryoptioncomboid, categoryoptioncombo.name AS name , categoryoptioncombo.uid AS uid,categorycombo.uid AS categorycombo_uid FROM categoryoptioncombo JOIN categorycombos_optioncombos ON categoryoptioncombo.categoryoptioncomboid=categorycombos_optioncombos.categoryoptioncomboid JOIN categorycombo ON categorycombos_optioncombos.categorycomboid=categorycombo.categorycomboid;")
         self._categorycombos_optioncombos = hook.get_pandas_df(
             "SELECT *  FROM categorycombos_optioncombos;")
         self.dataset = hook.get_pandas_df(
