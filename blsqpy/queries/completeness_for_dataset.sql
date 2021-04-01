@@ -40,7 +40,7 @@ org_unit_group AS(
 
 {% if deg_uid_conditions %} 
 de_group AS(      
-    SELECT  dataelementgroupid,
+    SELECT  dataelementgroup.dataelementgroupid AS dataelementgroupid,
             dataelementid
     FROM dataelementgroup
     JOIN dataelementgroupmembers 
@@ -90,7 +90,6 @@ dataset_structure AS(
             dataset_info.sourceid,
             dataset_info.dataelementid,
             dataset_info.categoryoptioncomboid,
-            period_info_filtered.periodid,
             {% if deg_uid_conditions %} 
                 de_group.dataelementgroupid,
             {% endif %}
@@ -127,7 +126,7 @@ datavalue_restricted AS(
     
         SELECT
             dataset_structure.datasetid,
-            dataset_structure.sourceid,
+            dataset_structure.sourceid AS organisationunitid,
             dataset_structure.dataelementid,
             {% if coc_disagg %}
             dataset_structure.categoryoptioncomboid,

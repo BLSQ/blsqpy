@@ -13,3 +13,5 @@ from . import extract
 from . import mapping
 from . import data_process
 from . import coverage
+from . import support
+from . import visualization

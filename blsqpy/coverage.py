@@ -239,7 +239,7 @@ class Coverage:
 
 #--------------------------------General Methods------------------------------    
     
-    def timeliness(self, target_ids, ids_type='dataset',averaged=False):
+    def timeliness(self, target_ids, ids_type='dataset',averaged=False,level_to_group=None):
         """
         Given a list of DE or Datasets UID(s) it returns a DataFrame with the
         timeliness (difference in days between expected deadline and actual time
@@ -272,6 +272,7 @@ class Coverage:
         return self._hook.get_pandas_df(get_query(self._timeliness_dict[str(ids_type)][0],dict(
             self._query_common_dict,**{
                     self._timeliness_dict[str(ids_type)][1]: QueryTools.uids_join_filter_formatting(target_ids),
+                    'level_to_group':self._level_to_group_completeness(level_to_group),
                     'averaged':averaged
                     }
             )
@@ -488,7 +489,8 @@ class Coverage:
                             'emore':'>=',
                             'eless':'<=',
                             'more':'>','
-                            less':'<'
+                            'less':'<',
+                            'equal':'=='
                             
                     fillnan_value:float or int or str; 0
                         if None it executes comparison as the df exists,
@@ -502,7 +504,7 @@ class Coverage:
                 DataFrame
         """
         
-        valid_relationship_types_dict={'emore':'>=','eless':'<=','more':'>','less':'<'}
+        valid_relationship_types_dict={'emore':'>=','eless':'<=','more':'>','less':'<','equal':'=='}
 
         def column_coherence_check(df,col_left,col_right,col_label,rel_type='eless'):            
             
@@ -512,7 +514,7 @@ class Coverage:
                     df_usable=df.fillna(fillnan_value)
                 else:
                     df_usable=df.copy()
-                col_comp=df_usable.eval('`'+str(col_left)+'` '+valid_relationship_types_dict(rel_type)+ ' `'+str(col_right) +'`')
+                col_comp=df_usable.eval('`'+str(col_left)+'`'+valid_relationship_types_dict[rel_type]+'`'+str(col_right) +'`')
                 df[col_label]=col_comp.astype(int)
             
             else:

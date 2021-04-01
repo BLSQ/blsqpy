@@ -106,7 +106,7 @@ class Dhis2(object):
         self.orgunitgroup = hook.get_pandas_df(
             "SELECT uid, name, orgunitgroupid  FROM orgunitgroup;")
         self.periodstructure = hook.get_pandas_df(
-            "SELECT periodid, iso AS period  FROM _periodstructure;")
+            "SELECT periodid,enddate, iso AS period  FROM _periodstructure;")
 
         # replace resources sql "SELECT organisationunituid, level, uidlevel1, uidlevel2, uidlevel3, uidlevel4, uidlevel5 FROM _orgunitstructure;")
         # by sql on orgunit and computation
@@ -235,7 +235,7 @@ class Dhis2(object):
         return self.orgunitstructure
     
 
-    def uid_labeling(self,df,orgunit_col='organisationunituid',oug_col='oug_uid',deg_col='deg_uid',coc_col='categoryoptioncombo_uid',datel_col='dataelement_uid',dataset_col='dataset_uid',key_identifier='id'):
+    def uid_labeling(self,df,orgunit_col='organisationunituid',oug_col='oug_uid',deg_col='deg_uid',coc_col='categoryoptioncombo_uid',datel_col='dataelement_uid',dataset_col='dataset_uid',period_col='period_uid',key_identifier='id'):
         """
         Given a Dataframe and a series of column names inside it, it 
         fetches and substitutes the uids found in the DataFrame found for their names
@@ -277,7 +277,8 @@ class Dhis2(object):
                               'deg':[self.dataelementgroup,deg_col,'dataelementgroupid'],
                               'coc':[self.categoryoptioncombo,coc_col,'categoryoptioncomboid'],
                               'dataelement':[self.dataelement,datel_col,'dataelementid'],
-                              'dataset':[self.dataset,dataset_col,'datasetid']
+                              'dataset':[self.dataset,dataset_col,'datasetid'],
+                              'period':[self.periodstructure,period_col,'periodid']
                               }
         
         

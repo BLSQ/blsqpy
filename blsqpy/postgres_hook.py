@@ -4,6 +4,8 @@ from datetime import datetime
 from contextlib import closing
 from urllib.parse import urlparse
 from sqlalchemy import create_engine
+import getpass
+import urllib
 
 import psycopg2
 import psycopg2.extensions
@@ -15,24 +17,40 @@ from blsqpy.dot import Dot
 
 class PostgresHook(object):
 
-    def __init__(self, postgres_conn_id):
+    def __init__(self, postgres_conn_id,s3_env=False):
         self.conn_name_attr = "postgres_conn_id"
-        self.postgres_conn_id = postgres_conn_id
-        props = Dot.load_env(postgres_conn_id)
-        if 'url' in props:
-            result = urlparse(props['url'])
-            username = result.username
-            password = result.password
-            database = result.path[1::]
-            hostname = result.hostname
+        if not s3_env:
+            self.postgres_conn_id = postgres_conn_id
 
-            self.connection = {
-                "database": database,
-                "user": username,
-                "password": password,
-                "host": hostname
-            }
+            props = Dot.load_env(postgres_conn_id)
+            if 'url' in props:
+                result = urlparse(props['url'])
+                username = result.username
+                password = result.password
+                database = result.path[1::]
+                hostname = result.hostname
+    
+                self.connection = {
+                    "database": database,
+                    "user": username,
+                    "password": password,
+                    "host": hostname
+                }
+            else:
+                self.connection = props
         else:
+            self.postgres_conn_id = postgres_conn_id.keys()[0]
+            props=postgres_conn_id[self.postgres_conn_id]
+
+            BD_USER = getpass.getpass("API User")
+            BD_PWD = getpass.getpass("API Password")
+            
+            user = urllib.parse.quote(BD_USER)
+            pwd = urllib.parse.quote(BD_PWD)
+            props.update({'user':user,
+                          'password':pwd
+                          })
+            
             self.connection = props
 
     def get_pandas_df(self, sql, parameters=None):
