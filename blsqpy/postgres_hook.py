@@ -39,7 +39,7 @@ class PostgresHook(object):
             else:
                 self.connection = props
         else:
-            self.postgres_conn_id = postgres_conn_id.keys()[0]
+            self.postgres_conn_id = list(postgres_conn_id.keys())[0]
             props=postgres_conn_id[self.postgres_conn_id]
 
             BD_USER = getpass.getpass("API User")
