@@ -44,11 +44,14 @@ class PostgresHook(object):
 
             BD_USER = getpass.getpass("API User")
             BD_PWD = getpass.getpass("API Password")
+            BD_HOST = getpass.getpass("API Host")
             
             user = urllib.parse.quote(BD_USER)
             pwd = urllib.parse.quote(BD_PWD)
+            host=urllib.parse.quote(BD_HOST)
             props.update({'user':user,
-                          'password':pwd
+                          'password':pwd,
+                          'host':host
                           })
             
             self.connection = props
