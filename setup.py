@@ -24,7 +24,7 @@ setup(
    },
     include_package_data=True,
     install_requires=[
-       "scipy", "pandas", "boto3", "python-dotenv", "psycopg2-binary", "sqlalchemy", "jinja2", "requests","geopandas","shapely== 1.6.4.post2", "matplotlib==2.2.4","descartes"
+       "scipy", "pandas", "boto3", "python-dotenv", "psycopg2-binary", "sqlalchemy", "jinja2", "requests","geopandas","shapely", "matplotlib","descartes"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
