@@ -41,18 +41,12 @@ class PostgresHook(object):
         else:
             self.postgres_conn_id = list(postgres_conn_id.keys())[0]
             props=postgres_conn_id[self.postgres_conn_id]
-
-            BD_USER = getpass.getpass("API User")
-            BD_PWD = getpass.getpass("API Password")
-            BD_HOST = getpass.getpass("API Host")
             
-            user = urllib.parse.quote(BD_USER)
-            pwd = urllib.parse.quote(BD_PWD)
-            host=urllib.parse.quote(BD_HOST)
-            props.update({'user':user,
-                          'password':pwd,
-                          'host':host
-                          })
+            for key in ['user','password','host']:
+                if key not in props:
+                    BD_KEY=getpass.getpass('API '+key.capitalize())
+                    key_info=urllib.parse.quote(BD_KEY)
+                    props.update({key:key_info})
             
             self.connection = props
 
