@@ -87,12 +87,19 @@ dataset_structure AS(
         SELECT
             dataset_info.datasetid,
             dataset_info.sourceid,
+            
             dataset_info.dataelementid,
             dataset_info.categoryoptioncomboid,
 
             {% if deg_uid_conditions %} 
                 de_group.dataelementgroupid,
             {% endif %}
+            
+            {% if hashed_deg_uid_conditions %} 
+                {{hashed_deg_uid_conditions}}.dataelementgroupid,
+            {% endif %}            
+            
+            
             {% if oug_uid_conditions %} 
                 org_unit_group.orgunitgroupid,
             {% endif %}
@@ -114,6 +121,11 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
     WHERE dataset_info.sourceid in (SELECT organisationunitid FROM organisation_info_filtered )
 {% endif %}
 
+{% if hashed_deg_uid_conditions %} 
+    JOIN {{hashed_deg_uid_conditions}} 
+    ON dataset_info.dataelementid = {{hashed_deg_uid_conditions}}.dataelementid
+{% endif %}
+
     )
     
         SELECT
@@ -123,6 +135,9 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
             {% if deg_uid_conditions %} 
                 dataset_structure.dataelementgroupid,
             {% endif %}
+            {% if hashed_deg_uid_conditions %} 
+                dataset_structure.dataelementgroupid,
+            {% endif %}    
             {% if oug_uid_conditions %} 
                 dataset_structure.orgunitgroupid,
             {% endif %}
@@ -148,8 +163,10 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
             {% if deg_uid_conditions %} 
                 dataset_structure.dataelementgroupid,
             {% endif %}
+            {% if hashed_deg_uid_conditions %} 
+                dataset_structure.dataelementgroupid,
+            {% endif %}
             {% if oug_uid_conditions %} 
                 dataset_structure.orgunitgroupid,
             {% endif %}
             {{level_to_group}}
-            
