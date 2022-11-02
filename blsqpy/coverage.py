@@ -329,7 +329,7 @@ class Coverage:
             
             ))
 
-    def completeness_for_data_sets_condensed(self, dataset_ids,deg_ids=None,oug_ids=None,level_to_group=None):
+    def completeness_for_data_sets_condensed(self, dataset_ids,deg_ids=None,oug_ids=None,level_to_group=None,imputed_deg_table=None):
         """
         Given a list of datasets, and datalements UID(s) it returns a DataFrame 
         with the values expected and reported for each dataset as a whole and 
@@ -361,14 +361,18 @@ class Coverage:
         Returns:
                 DataFrame
         """
+        call_dict={
+                'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
+                'level_to_group':self._level_to_group_completeness(level_to_group),
+                'deg_uid_conditions':QueryTools.uids_join_filter_formatting(deg_ids),
+                'oug_uid_conditions':QueryTools.uids_join_filter_formatting(oug_ids)
+                }
+        if imputed_deg_table:
+            call_dict.update({'hashed_deg_uid_conditions':imputed_deg_table})
+
 
         return self._hook.get_pandas_df(get_query("completeness_for_dataset_condensed",dict(
-            self._query_common_dict,**{
-                    'dataset_uid_conditions': QueryTools.uids_join_filter_formatting(dataset_ids),
-                    'level_to_group':self._level_to_group_completeness(level_to_group),
-                    'deg_uid_conditions':QueryTools.uids_join_filter_formatting(deg_ids),
-                    'oug_uid_conditions':QueryTools.uids_join_filter_formatting(oug_ids)
-                    }
+            self._query_common_dict,**call_dict
             )
             
             ))
