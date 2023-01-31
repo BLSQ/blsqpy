@@ -123,7 +123,10 @@ ON dataset_info.periodtypeid = period_info_filtered.periodtypeid
 
 {% if hashed_deg_uid_conditions %} 
     JOIN {{hashed_deg_uid_conditions}} 
-    ON dataset_info.dataelementid = {{hashed_deg_uid_conditions}}.dataelementid
+    ON (
+        dataset_info.dataelementid = {{hashed_deg_uid_conditions}}.dataelementid
+    AND dataset_info.datasetid = {{hashed_deg_uid_conditions}}.datasetid 
+       )
 {% endif %}
 
     )
