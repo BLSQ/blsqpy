@@ -36,6 +36,72 @@ class measured_serie(object):
         # TODO Check if preferred source is in the data list
         self.series = [activity + '_' + state + '_' + sources for sources in self.sources]
         self.raw_data = df[['period', 'orgunit'] + self.series]
+        
+    def outliers_detection_and_quality(self,serie_df,dataseries_type,threshold):
+        serie_label=[col for col in serie_df.columns if col !='period']
+        serie_values=serie_df.loc[serie_label]
+        serie_missingness=serie_values.isna().sum()/len(serie_values)
+        serie_valid_len=len(serie_values.dropna())
+        #Estimation of outliers according to the series type.
+        
+        # 1. Univariate-Time independent
+        
+        #A.Boxplot boundaries
+        if dataseries_type =='uboxplot':
+            serie_quartiles=serie_values.quantile([0.25,0.5,0.75]).tolist()
+            inter_q_dist=serie_quartiles[2]-serie_quartiles[0]
+            inter_q_dist=inter_q_dist*threshold
+            serie_limits= (serie_values >= (serie_quartiles[0]-inter_q_dist)) & \
+            (serie_values <= (serie_quartiles[0]+ inter_q_dist))
+            inliners=serie_values[serie_limits]
+            outliers=serie_values[not serie_limits]
+            
+        #B.Normal like distribution
+        elif dataseries_type=='unormal':
+            serie_mean=serie_values.mean()
+            serie_std=serie_values.std()
+            serie_limits= (serie_values >= (serie_mean-threshold*serie_std)) & \
+            (serie_values <= (serie_mean+threshold*serie_std))
+            inliners=serie_values[serie_limits]
+            outliers=serie_values[not serie_limits]
+        
+        #2. Bivariate - Time Dependent
+        
+        #It requires processing of variables, and format time ones
+        
+        X_time=np.array(pd.to_datetime(serie_df['period']).apply(lambda x: x.toordinal()))
+        y_values=np.array(serie_df[serie_label])
+        X=np.concatenate((X_time,y_values),axis=1)
+        
+        if dataseries_type=='bLOF':
+            
+            LOF=LocalOutlierFactor()
+            outlier_mask=LOF.fit_predict(X) ==-1 
+            
+        elif dataseries_type=='bDBSCAN':
+            DBS=DBSCAN()
+            outlier_mask=DBS.fit_predict(X) ==-1 
+            
+        elif dataseries_type=='bFOREST':
+            
+            bIF=IsolationForest()
+            outlier_mask=bIF.fit_predict(X) ==-1
+            
+        elif dataseries_type=='bRANSAC':
+            ransac = linear_model.RANSACRegressor()
+            ransac.fit(X_time, y_values)
+            inlier_mask = ransac.inlier_mask_
+            outlier_mask = np.logical_not(inlier_mask)
+            
+        elif dataseries_type=='bHubert':
+            
+            huber = HuberRegressor(fit_intercept=True,max_iter=100,
+                    epsilon=1.35)
+            huber.fit(X_time, y_values)
+            outliers=huber.outliers_ 
+            rsq_prediction=huber.score(X, y)
+                
+                
 
     def reconcile_series(self):
         # Question1 : we may not want to fill the gaps with not preferred values.
